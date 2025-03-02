@@ -42,36 +42,11 @@ A fun twist on the classic Tic Tac Toe game, featuring an expanding board and sc
 
 No installation required! Simply visit the GitHub Pages link or open the index.html file in a web browser.
 
-## Development
-
-To set up the project locally:
-
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/TicTacToeExtreme.git
-   ```
-2. Open the project folder in your preferred code editor.
-3. Start editing the HTML, CSS, or JavaScript files as needed.
-4. Test changes by opening index.html in a web browser.
-
 ## Deployment
 
 This project is deployed using GitHub Pages:
 
-1. Push your changes to GitHub:
-   ```
-   git add .
-   git commit -m "Your commit message"
-   git push origin main
-   ```
-2. Go to your repository settings on GitHub.
-3. Scroll down to the GitHub Pages section.
-4. Select the main branch as the source.
-5. Your site will be published at `https://yourusername.github.io/TicTacToeExtreme/`.
-
-## License
-
-MIT License
+To Play, visit https://dpartr.github.io/TicTacToeExtreme/
 
 ## Acknowledgments
 

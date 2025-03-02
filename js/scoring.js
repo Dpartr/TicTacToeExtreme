@@ -129,25 +129,38 @@ const Scoring = (function() {
     function shouldEndGame(scores, boardState) {
         // End if board is full
         if (boardState.every(row => row.every(cell => cell !== ''))) {
+            console.log("Game ending: Board is full");
             return true;
         }
         
-        // End if score difference is too large (e.g., 3 or more)
-        const scoreDifference = Math.abs(scores.X - scores.O);
+        // Count remaining empty cells
         const remainingCells = boardState.flat().filter(cell => cell === '').length;
+        console.log(`Remaining cells: ${remainingCells}`);
         
-        // If one player is ahead by more points than there are remaining scoring opportunities
-        // Each remaining cell can at most contribute to 3 new lines
-        const maxRemainingScoreDelta = Math.floor(remainingCells / 3);
-        if (scoreDifference > maxRemainingScoreDelta) {
+        // Calculate current score difference
+        const scoreDifference = Math.abs(scores.X - scores.O);
+        console.log(`Current score difference: ${scoreDifference}`);
+        
+        // Calculate maximum possible remaining score opportunities
+        // For a 5x5 board, calculate how many more 3-in-a-rows could be formed
+        // This is a more conservative estimate to prevent premature endings
+        const maxPossibleNewLines = Math.ceil(remainingCells / 3);
+        console.log(`Max possible new scoring lines: ${maxPossibleNewLines}`);
+        
+        // Only end the game if one player's lead is mathematically impossible to overcome
+        if (scoreDifference > maxPossibleNewLines) {
+            console.log("Game ending: Score difference is mathematically decisive");
             return true;
         }
         
-        // End if either player has 5 or more points
-        if (scores.X >= 5 || scores.O >= 5) {
+        // End if either player has reached a high score (raised from 5 to 8)
+        // This ensures the game doesn't end too quickly
+        if (scores.X >= 8 || scores.O >= 8) {
+            console.log(`Game ending: High score reached (${scores.X} vs ${scores.O})`);
             return true;
         }
         
+        // Continue the game
         return false;
     }
     
