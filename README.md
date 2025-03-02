@@ -38,10 +38,6 @@ A fun twist on the classic Tic Tac Toe game, featuring an expanding board and sc
 4. If the game ties, the board expands to 5x5.
 5. In the 5x5 phase, try to get more "three in a rows" than the computer.
 
-## Installation
-
-No installation required! Simply visit the GitHub Pages link or open the index.html file in a web browser.
-
 ## Deployment
 
 This project is deployed using GitHub Pages:
