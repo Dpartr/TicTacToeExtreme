@@ -297,22 +297,31 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (isFinalPhase) {
             // Final 5x5 phase ending
+            const boardState = Board.getBoardState();
+            const isBoardFull = boardState.every(row => row.every(cell => cell !== ''));
+            const endReason = isBoardFull ? 
+                "The board is completely filled." : 
+                "No more three-in-a-rows are possible.";
+            
             if (winner === 'player') {
                 resultMessage.textContent = "You Win!";
                 resultDetails.innerHTML = `
                     <p>Final Score: <strong>You ${playerScore}</strong> - ${computerScore} Computer</p>
+                    <p>${endReason}</p>
                     <p>Congratulations! You've outscored the computer!</p>
                 `;
             } else if (winner === 'computer') {
                 resultMessage.textContent = "Computer Wins!";
                 resultDetails.innerHTML = `
                     <p>Final Score: You ${playerScore} - <strong>${computerScore} Computer</strong></p>
+                    <p>${endReason}</p>
                     <p>The computer outscored you this time.</p>
                 `;
             } else {
                 resultMessage.textContent = "It's a Tie!";
                 resultDetails.innerHTML = `
                     <p>Final Score: <strong>You ${playerScore}</strong> - <strong>${computerScore} Computer</strong></p>
+                    <p>${endReason}</p>
                     <p>An evenly matched game!</p>
                 `;
             }
