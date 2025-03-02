@@ -206,10 +206,21 @@ document.addEventListener('DOMContentLoaded', function() {
         scoreElement.classList.remove('hidden');
         updateScoreDisplay();
         
-        // Reset player turn
+        // After expanding the board, we should toggle the turn
+        // This ensures the player who just made the last move doesn't get a bonus turn
         setTimeout(() => {
-            isPlayerTurn = true; // Ensure it's player's turn after expansion
-            updateStatus("Your turn! Now try to get the most three-in-a-rows");
+            // The current player just made the move that filled the board
+            // So we need to give the turn to the other player
+            if (isPlayerTurn) {
+                // It was player's turn, so now it should be computer's turn
+                isPlayerTurn = false;
+                updateStatus("Computer's turn...");
+                makeAIMove();
+            } else {
+                // It was computer's turn, so now it should be player's turn
+                isPlayerTurn = true;
+                updateStatus("Your turn! Now try to get the most three-in-a-rows");
+            }
         }, 1500);
     }
     
