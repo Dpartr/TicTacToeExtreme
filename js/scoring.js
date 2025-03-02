@@ -127,40 +127,15 @@ const Scoring = (function() {
     
     // Check if game should end based on scores or board fullness
     function shouldEndGame(scores, boardState) {
-        // End if board is full
-        if (boardState.every(row => row.every(cell => cell !== ''))) {
-            console.log("Game ending: Board is full");
+        // ONLY end if board is full
+        const isFull = boardState.every(row => row.every(cell => cell !== ''));
+        
+        if (isFull) {
+            console.log("Game ending: Board is completely filled");
             return true;
         }
         
-        // Count remaining empty cells
-        const remainingCells = boardState.flat().filter(cell => cell === '').length;
-        console.log(`Remaining cells: ${remainingCells}`);
-        
-        // Calculate current score difference
-        const scoreDifference = Math.abs(scores.X - scores.O);
-        console.log(`Current score difference: ${scoreDifference}`);
-        
-        // Calculate maximum possible remaining score opportunities
-        // For a 5x5 board, calculate how many more 3-in-a-rows could be formed
-        // This is a more conservative estimate to prevent premature endings
-        const maxPossibleNewLines = Math.ceil(remainingCells / 3);
-        console.log(`Max possible new scoring lines: ${maxPossibleNewLines}`);
-        
-        // Only end the game if one player's lead is mathematically impossible to overcome
-        if (scoreDifference > maxPossibleNewLines) {
-            console.log("Game ending: Score difference is mathematically decisive");
-            return true;
-        }
-        
-        // End if either player has reached a high score (raised from 5 to 8)
-        // This ensures the game doesn't end too quickly
-        if (scores.X >= 8 || scores.O >= 8) {
-            console.log(`Game ending: High score reached (${scores.X} vs ${scores.O})`);
-            return true;
-        }
-        
-        // Continue the game
+        // Continue the game in all other cases
         return false;
     }
     

@@ -8,7 +8,10 @@
     --cell-hover: #f0f0f0;
     --x-color: #e74c3c;
     --o-color: #3498db;
-    --highlight-color: rgba(46, 204, 113, 0.2);
+    --highlight-color-x: rgba(231, 76, 60, 0.3);
+    --highlight-color-o: rgba(52, 152, 219, 0.3);
+    --highlight-border-x: #e74c3c;
+    --highlight-border-o: #3498db;
     --score-bg: #e7e7e7;
     --button-bg: #3498db;
     --button-hover: #2980b9;
@@ -127,8 +130,28 @@ h1 {
     color: var(--o-color);
 }
 
-.cell.highlight {
-    background-color: var(--highlight-color);
+.cell.highlight.x {
+    background-color: var(--highlight-color-x);
+    border-color: var(--highlight-border-x);
+    box-shadow: 0 0 5px var(--highlight-border-x);
+    animation: pulse-x 1s infinite alternate;
+}
+
+.cell.highlight.o {
+    background-color: var(--highlight-color-o);
+    border-color: var(--highlight-border-o);
+    box-shadow: 0 0 5px var(--highlight-border-o);
+    animation: pulse-o 1s infinite alternate;
+}
+
+@keyframes pulse-x {
+    from { box-shadow: 0 0 5px var(--highlight-border-x); }
+    to { box-shadow: 0 0 10px var(--highlight-border-x); }
+}
+
+@keyframes pulse-o {
+    from { box-shadow: 0 0 5px var(--highlight-border-o); }
+    to { box-shadow: 0 0 10px var(--highlight-border-o); }
 }
 
 .controls {

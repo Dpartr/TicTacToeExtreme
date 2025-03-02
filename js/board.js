@@ -113,11 +113,15 @@ const Board = (function() {
     }
     
     // Highlight winning combinations
-    function highlightCells(cellsToHighlight) {
+    function highlightCells(cellsToHighlight, playerSymbol) {
         cellsToHighlight.forEach(({row, col}) => {
             const index = row * boardSize + col;
             if (index >= 0 && index < cellElements.length) {
                 cellElements[index].classList.add('highlight');
+                // Add the symbol class for specific highlighting
+                if (playerSymbol) {
+                    cellElements[index].classList.add(playerSymbol.toLowerCase());
+                }
             }
         });
     }

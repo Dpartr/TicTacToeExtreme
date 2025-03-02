@@ -141,6 +141,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update score display
             updateScoreDisplay();
             
+            // Display current score status in the status element
+            updateScoreStatus();
+            
             // Check for new successful rows
             if (Scoring.hasNewSuccessfulRows()) {
                 highlightSuccessfulRows();
@@ -158,6 +161,34 @@ document.addEventListener('DOMContentLoaded', function() {
             // Continue 5x5 game
             togglePlayer();
         }
+    }
+    
+    // Update score status
+    function updateScoreStatus() {
+        let message = `Score: You ${playerScore} - ${computerScore} Computer`;
+        
+        if (playerScore > computerScore) {
+            message += " (You're winning!)";
+        } else if (computerScore > playerScore) {
+            message += " (Computer's ahead!)";
+        } else {
+            message += " (It's a tie!)";
+        }
+        
+        // Display this beneath the main status
+        const scoreStatus = document.createElement('div');
+        scoreStatus.textContent = message;
+        scoreStatus.style.fontSize = '0.9rem';
+        scoreStatus.style.marginTop = '5px';
+        
+        // Remove any existing score status
+        const existingStatus = document.querySelector('.score-status');
+        if (existingStatus) {
+            existingStatus.remove();
+        }
+        
+        scoreStatus.className = 'score-status';
+        statusElement.appendChild(scoreStatus);
     }
     
     // Transition from 3x3 to 5x5 phase
@@ -218,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Highlight player's successful rows
         if (successfulRows.X.length > 0) {
             successfulRows.X.forEach(row => {
-                Board.highlightCells(row);
+                Board.highlightCells(row, 'X');
             });
             updateStatus("You scored! Three in a row!");
         }
@@ -226,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Highlight AI's successful rows
         if (successfulRows.O.length > 0) {
             successfulRows.O.forEach(row => {
-                Board.highlightCells(row);
+                Board.highlightCells(row, 'O');
             });
             updateStatus("Computer scored! Three in a row!");
         }
@@ -257,22 +288,37 @@ document.addEventListener('DOMContentLoaded', function() {
             // Final 5x5 phase ending
             if (winner === 'player') {
                 resultMessage.textContent = "You Win!";
-                resultDetails.textContent = `Final Score: You ${playerScore} - ${computerScore} Computer`;
+                resultDetails.innerHTML = `
+                    <p>Final Score: <strong>You ${playerScore}</strong> - ${computerScore} Computer</p>
+                    <p>Congratulations! You've outscored the computer!</p>
+                `;
             } else if (winner === 'computer') {
                 resultMessage.textContent = "Computer Wins!";
-                resultDetails.textContent = `Final Score: You ${playerScore} - ${computerScore} Computer`;
+                resultDetails.innerHTML = `
+                    <p>Final Score: You ${playerScore} - <strong>${computerScore} Computer</strong></p>
+                    <p>The computer outscored you this time.</p>
+                `;
             } else {
                 resultMessage.textContent = "It's a Tie!";
-                resultDetails.textContent = `Final Score: You ${playerScore} - ${computerScore} Computer`;
+                resultDetails.innerHTML = `
+                    <p>Final Score: <strong>You ${playerScore}</strong> - <strong>${computerScore} Computer</strong></p>
+                    <p>An evenly matched game!</p>
+                `;
             }
         } else {
             // 3x3 phase ending with a winner
             if (winner === 'player') {
                 resultMessage.textContent = "You Win!";
-                resultDetails.textContent = "You got three in a row!";
+                resultDetails.innerHTML = `
+                    <p>You got three in a row in the 3x3 phase!</p>
+                    <p>That's impressive - the computer is designed to never lose at 3x3.</p>
+                `;
             } else {
                 resultMessage.textContent = "Computer Wins!";
-                resultDetails.textContent = "The computer got three in a row!";
+                resultDetails.innerHTML = `
+                    <p>The computer got three in a row.</p>
+                    <p>Don't worry! The 5x5 phase is more challenging and strategic.</p>
+                `;
             }
         }
         
