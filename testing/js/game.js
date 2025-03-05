@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (winner === 'player') {
             resultMessage.textContent = "You Win!";
             
-            // Create trophy container with animation
+            // Create trophy container with gentle glow
             const trophyHTML = `
                 <div class="trophy-container">
                     <div class="trophy-glow"></div>
@@ -336,16 +336,16 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (winner === 'computer') {
             resultMessage.textContent = "Computer Wins!";
             resultDetails.innerHTML = `
-                <div class="trophy-container" style="opacity: 0.6;">
-                    <span>🤖</span>
+                <div class="trophy-container">
+                    <span class="trophy-animate">🤖</span>
                 </div>
                 <p>Final Score: You ${playerScore} - <strong>${computerScore} Computer</strong></p>
             `;
         } else {
             resultMessage.textContent = "It's a Tie!";
             resultDetails.innerHTML = `
-                <div class="trophy-container" style="opacity: 0.7;">
-                    <span>🤝</span>
+                <div class="trophy-container">
+                    <span class="trophy-animate">🤝</span>
                 </div>
                 <p>Final Score: <strong>You ${playerScore}</strong> - <strong>${computerScore} Computer</strong></p>
             `;
