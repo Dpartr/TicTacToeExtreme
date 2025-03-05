@@ -1,0 +1,153 @@
+/* Coin Toss Animation Styles */
+.coin-toss-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    flex-direction: column;
+}
+
+.coin-toss-content {
+    background-color: var(--modal-content-bg);
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.coin-message {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.coin {
+    width: 150px;
+    height: 150px;
+    position: relative;
+    margin: 20px auto;
+    transform-style: preserve-3d;
+}
+
+.coin-flip {
+    animation: flip 2s forwards;
+}
+
+/* When both classes are present, the second animation overrides the first */
+.coin-flip.coin-flip-o {
+    animation: flip-o 2s forwards !important;
+}
+
+@keyframes flip {
+    0% {
+        transform: rotateX(0);
+    }
+    100% {
+        transform: rotateX(1800deg); /* 5 full rotations to land on X */
+    }
+}
+
+@keyframes flip-o {
+    0% {
+        transform: rotateX(0);
+    }
+    100% {
+        transform: rotateX(1980deg); /* 5.5 rotations to land on O (180° more) */
+    }
+}
+
+.coin-side {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    font-weight: bold;
+    backface-visibility: hidden;
+}
+
+.coin-front {
+    background: linear-gradient(145deg, #f5d742, #e6c430);
+    color: var(--x-color);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+    transform: rotateX(0deg);
+}
+
+.coin-back {
+    background: linear-gradient(145deg, #f5d742, #e6c430);
+    color: var(--o-color);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+    transform: rotateX(180deg);
+}
+
+.coin-edge {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: translateZ(0px);
+    border-radius: 50%;
+}
+
+.coin-edge::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: repeating-linear-gradient(
+        90deg,
+        #c4a622,
+        #e6c430 2px,
+        #c4a622 4px
+    );
+    transform: rotateX(90deg) translateZ(4px) scale(0.965);
+}
+
+/* Result message after the coin toss */
+.result-message {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.show-result {
+    opacity: 1;
+}
+
+/* Continue button */
+.continue-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.show-button {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.continue-button:hover {
+    background-color: var(--button-hover);
+}
