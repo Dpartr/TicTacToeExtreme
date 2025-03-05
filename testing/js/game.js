@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Game constants
     let PLAYER_SYMBOL = 'X'; // Will be set by coin toss
     let AI_SYMBOL = 'O'; // Will be set by coin toss
+    let AI_PLAYSTYLE = 'balanced'; // Default playstyle
     const MAX_SCORE = 5;
     
     // Game state
@@ -27,12 +28,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultDetails = document.getElementById('result-details');
     const playAgainButton = document.getElementById('play-again-btn');
     
+    // Initialize after playstyle selection
+    function initGameAfterPlaystyleSelection(playstyle) {
+        // Set AI playstyle
+        AI_PLAYSTYLE = playstyle;
+        AI.setPlaystyle(playstyle);
+        
+        // Now start the coin toss to determine symbols and first player
+        CoinToss.initCoinToss(initGameAfterCoinToss);
+    }
+    
     // Initialize after coin toss
     function initGameAfterCoinToss(playerSym, computerSym, playerFirst) {
         // Set symbols based on coin toss
         PLAYER_SYMBOL = playerSym;
         AI_SYMBOL = computerSym;
         isPlayerTurn = playerFirst;
+        
+        // Set AI symbols
+        AI.setSymbols(PLAYER_SYMBOL, AI_SYMBOL);
         
         // Reset game state
         gameActive = true;
@@ -61,10 +75,10 @@ document.addEventListener('DOMContentLoaded', function() {
         addEventListeners();
     }
     
-    // Start the game with coin toss
+    // Start the game with playstyle selection
     function startGame() {
-        // Show coin toss and pass callback to initialize game after toss
-        CoinToss.initCoinToss(initGameAfterCoinToss);
+        // First show playstyle selection
+        PlaystyleSelection.initPlaystyleSelection(initGameAfterPlaystyleSelection);
     }
     
     // Add event listeners to the game elements
@@ -248,7 +262,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isPlayerTurn) {
             updateStatus(`Your turn! Place a ${PLAYER_SYMBOL}`);
         } else {
-            updateStatus("Computer's turn...");
+            let computerMessage = "Computer's turn...";
+            
+            // Add some personality based on playstyle
+            if (AI_PLAYSTYLE === 'aggressive' && Math.random() < 0.3) {
+                computerMessage = "Computer is planning an attack...";
+            } else if (AI_PLAYSTYLE === 'defensive' && Math.random() < 0.3) {
+                computerMessage = "Computer is analyzing your strategy...";
+            }
+            
+            updateStatus(computerMessage);
             makeAIMove();
         }
     }
@@ -284,7 +307,16 @@ document.addEventListener('DOMContentLoaded', function() {
             successfulRows[AI_SYMBOL].forEach(row => {
                 Board.highlightCells(row, AI_SYMBOL);
             });
-            updateStatus("Computer scored! Three in a row!");
+            
+            // Add some flavor based on playstyle
+            let message = "Computer scored! Three in a row!";
+            if (AI_PLAYSTYLE === 'aggressive' && Math.random() < 0.5) {
+                message = "Computer scores and presses the advantage!";
+            } else if (AI_PLAYSTYLE === 'defensive' && Math.random() < 0.5) {
+                message = "Computer counters with a score!";
+            }
+            
+            updateStatus(message);
         }
         
         // Continue after a short delay
@@ -314,6 +346,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add the win-modal class to apply special styling
         gameOverModal.classList.add('win-modal');
         
+        // Include AI playstyle in result message
+        const playstyleText = AI_PLAYSTYLE === 'random' ? 'random strategy' : 
+                             `${AI_PLAYSTYLE} playstyle`;
+        
         if (winner === 'player') {
             resultMessage.textContent = "You Win!";
             
@@ -324,6 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span class="trophy-animate">🏆</span>
                 </div>
                 <p>Final Score: <strong>You ${playerScore}</strong> - ${computerScore} Computer</p>
+                <p>The computer was using a ${playstyleText}.</p>
             `;
             
             resultDetails.innerHTML = trophyHTML;
@@ -340,6 +377,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span class="trophy-animate">🤖</span>
                 </div>
                 <p>Final Score: You ${playerScore} - <strong>${computerScore} Computer</strong></p>
+                <p>The computer was using a ${playstyleText}.</p>
             `;
         } else {
             resultMessage.textContent = "It's a Tie!";
@@ -348,6 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span class="trophy-animate">🤝</span>
                 </div>
                 <p>Final Score: <strong>You ${playerScore}</strong> - <strong>${computerScore} Computer</strong></p>
+                <p>The computer was using a ${playstyleText}.</p>
             `;
         }
         
@@ -361,10 +400,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Hide game over modal if visible
         gameOverModal.classList.add('hidden');
         
-        // Start the game with coin toss
+        // Start the game with playstyle selection
         startGame();
     }
     
-    // Initialize the game with coin toss
+    // Initialize the game with playstyle selection
     startGame();
 });
