@@ -342,6 +342,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // End the game and show result
     function endGame(winner, isFinalPhase = false) {
         gameActive = false;
+
+        // Update AI game history for adaptive strategy
+        const didAIWin = winner === 'computer';
+        AI.updateGameHistory(didAIWin);
         
         // Add the win-modal class to apply special styling
         gameOverModal.classList.add('win-modal');

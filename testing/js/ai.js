@@ -7,23 +7,63 @@ const AI = (function() {
     let AI_SYMBOL = 'O';
     let PLAYSTYLE = 'balanced'; // Default playstyle
     
+    // Track game history for adaptive AI
+    let isFirstGame = true;
+    let didAIWinLastGame = false;
+    
     // Set the player and AI symbols
     function setSymbols(playerSymbol, aiSymbol) {
         PLAYER = playerSymbol;
         AI_SYMBOL = aiSymbol;
     }
     
+    // Update game history
+    function updateGameHistory(aiWon) {
+        isFirstGame = false;
+        didAIWinLastGame = aiWon;
+    }
+    
     // Set the AI playstyle
     function setPlaystyle(playstyle) {
-        // If random, select a random playstyle
-        if (playstyle === 'random') {
-            const styles = ['aggressive', 'defensive', 'balanced'];
-            PLAYSTYLE = styles[Math.floor(Math.random() * styles.length)];
-            console.log(`Random playstyle selected: ${PLAYSTYLE}`);
-        } else {
+        // If not random, just set the specified playstyle
+        if (playstyle !== 'random') {
             PLAYSTYLE = playstyle;
             console.log(`Playstyle set to: ${PLAYSTYLE}`);
+            return;
         }
+        
+        // Implement adaptive strategy based on game history
+        if (isFirstGame) {
+            // First game strategy
+            if (AI_SYMBOL === 'X') {
+                // AI goes first - randomly choose any playstyle
+                const styles = ['aggressive', 'defensive', 'balanced'];
+                PLAYSTYLE = styles[Math.floor(Math.random() * styles.length)];
+            } else {
+                // AI goes second - choose Aggressive or Balanced
+                PLAYSTYLE = Math.random() < 0.5 ? 'aggressive' : 'balanced';
+            }
+        } else if (didAIWinLastGame) {
+            // AI won last game - be more accommodating
+            if (AI_SYMBOL === 'X') {
+                // AI goes first - choose Defensive or Balanced
+                PLAYSTYLE = Math.random() < 0.5 ? 'defensive' : 'balanced';
+            } else {
+                // AI goes second - choose Balanced
+                PLAYSTYLE = 'balanced';
+            }
+        } else {
+            // AI lost last game - be more challenging
+            if (AI_SYMBOL === 'X') {
+                // AI goes first - choose Aggressive or Balanced
+                PLAYSTYLE = Math.random() < 0.6 ? 'aggressive' : 'balanced';
+            } else {
+                // AI goes second - choose Aggressive
+                PLAYSTYLE = 'aggressive';
+            }
+        }
+        
+        console.log(`Random playstyle selected: ${PLAYSTYLE} (First Game: ${isFirstGame}, AI Won Last: ${didAIWinLastGame}, AI Symbol: ${AI_SYMBOL})`);
     }
     
     // For the 3x3 phase: Minimax algorithm with alpha-beta pruning and playstyle influence
@@ -687,7 +727,8 @@ const AI = (function() {
         getBestMove,
         checkWinner,
         setSymbols,
-        setPlaystyle
+        setPlaystyle,
+        updateGameHistory
     };
 }
 )();
