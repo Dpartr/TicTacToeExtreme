@@ -47,7 +47,7 @@ const PlaystyleSelection = (function() {
             'random',
             '🎲',
             'Random',
-            'Unpredictable mix of all playstyles',
+            'Chooses random strat, taking into account Play order, and Recent Win or Loss',
             true // Selected by default
         ));
         
