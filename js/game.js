@@ -2,17 +2,43 @@
  * Main game module that coordinates the entire game flow
  */
 document.addEventListener('DOMContentLoaded', function() {
+    // Fun message constants
+    const WIN_MESSAGES = [
+        "Winner Winner Chicken Winner!",
+        "Don't quit while you're ahead",
+        "I bet you can't do that again!",
+        "Supreme Victory!",
+        "I don't want to play anymore!"
+    ];
+
+    const LOSS_MESSAGES = [
+        "One... more.. game..",
+        "SORRY! Please try again!",
+        "The computer got lucky!",
+        "Don't give up!",
+        "You zigged when you should have zagged!"
+    ];
+
+    const TIE_MESSAGES = [
+        "I demand a recount",
+        "Nothing is worse than a tie",
+        "Cat's game?! I thought we were playing tic-tac-toe EXTREME!",
+        "Touché",
+        "Perfect balance achieved"
+    ];
+    
     // Game constants
-    const PLAYER_SYMBOL = 'X';
-    const AI_SYMBOL = 'O';
+    let PLAYER_SYMBOL = 'X'; // Will be set by coin toss
+    let AI_SYMBOL = 'O'; // Will be set by coin toss
     const MAX_SCORE = 5;
     
     // Game state
-    let gameActive = true;
+    let gameActive = false; // Set to false initially until coin toss completes
     let currentPhase = '3x3'; // '3x3' or '5x5'
     let playerScore = 0;
     let computerScore = 0;
     let lastMoveHighlighted = false;
+    let isPlayerTurn = true; // Will be set by coin toss
     
     // DOM elements
     const statusElement = document.getElementById('status');
@@ -26,15 +52,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultDetails = document.getElementById('result-details');
     const playAgainButton = document.getElementById('play-again-btn');
     
-    // Initialize the game
-    function initGame() {
+    // Initialize after coin toss
+    function initGameAfterCoinToss(playerSym, computerSym, playerFirst) {
+        // Set symbols based on coin toss
+        PLAYER_SYMBOL = playerSym;
+        AI_SYMBOL = computerSym;
+        isPlayerTurn = playerFirst;
+        
         // Reset game state
         gameActive = true;
         currentPhase = '3x3';
         playerScore = 0;
         computerScore = 0;
         lastMoveHighlighted = false;
-        isPlayerTurn = true; // Reset player turn
         
         // Hide score display in 3x3 phase
         scoreElement.classList.add('hidden');
@@ -43,11 +73,23 @@ document.addEventListener('DOMContentLoaded', function() {
         Board.initializeBoard(3);
         Board.renderBoard();
         
-        // Update game status
-        updateStatus("Your turn! Place an X");
+        // Update game status based on who goes first
+        if (isPlayerTurn) {
+            updateStatus(`Your turn! Place a ${PLAYER_SYMBOL}`);
+        } else {
+            updateStatus("Computer's turn...");
+            // Let the computer make the first move after a short delay
+            setTimeout(makeAIMove, 500);
+        }
         
         // Add event listeners
         addEventListeners();
+    }
+    
+    // Initialize the game
+    function initGame() {
+        // Start with coin toss
+        CoinToss.initCoinToss(initGameAfterCoinToss);
     }
     
     // Add event listeners to the game elements
@@ -67,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const clickedCell = event.target;
         
         // Ignore if not clicking a cell or if game is not active
-        if (!clickedCell.classList.contains('cell') || !gameActive || lastMoveHighlighted) {
+        if (!clickedCell.classList.contains('cell') || !gameActive || lastMoveHighlighted || !isPlayerTurn) {
             return;
         }
         
@@ -135,8 +177,8 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             // 5x5 phase - calculate scores
             const scores = Scoring.calculateScores(boardState);
-            playerScore = scores.X;
-            computerScore = scores.O;
+            playerScore = scores[PLAYER_SYMBOL];
+            computerScore = scores[AI_SYMBOL];
             
             // Update score display
             updateScoreDisplay();
@@ -219,20 +261,17 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // It was computer's turn, so now it should be player's turn
                 isPlayerTurn = true;
-                updateStatus("Your turn! Now try to get the most three-in-a-rows");
+                updateStatus(`Your turn! Now try to get the most three-in-a-rows with ${PLAYER_SYMBOL}`);
             }
         }, 1500);
     }
-    
-    // Track current player
-    let isPlayerTurn = true;
     
     // Toggle between player and AI turns
     function togglePlayer() {
         isPlayerTurn = !isPlayerTurn;
         
         if (isPlayerTurn) {
-            updateStatus("Your turn! Place an X");
+            updateStatus(`Your turn! Place a ${PLAYER_SYMBOL}`);
         } else {
             updateStatus("Computer's turn...");
             makeAIMove();
@@ -258,17 +297,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const successfulRows = Scoring.getSuccessfulRows();
         
         // Highlight player's successful rows
-        if (successfulRows.X.length > 0) {
-            successfulRows.X.forEach(row => {
-                Board.highlightCells(row, 'X');
+        if (successfulRows[PLAYER_SYMBOL].length > 0) {
+            successfulRows[PLAYER_SYMBOL].forEach(row => {
+                Board.highlightCells(row, PLAYER_SYMBOL);
             });
             updateStatus("You scored! Three in a row!");
         }
         
         // Highlight AI's successful rows
-        if (successfulRows.O.length > 0) {
-            successfulRows.O.forEach(row => {
-                Board.highlightCells(row, 'O');
+        if (successfulRows[AI_SYMBOL].length > 0) {
+            successfulRows[AI_SYMBOL].forEach(row => {
+                Board.highlightCells(row, AI_SYMBOL);
             });
             updateStatus("Computer scored! Three in a row!");
         }
@@ -278,7 +317,9 @@ document.addEventListener('DOMContentLoaded', function() {
             lastMoveHighlighted = false;
             
             // Check if game should end before continuing
-            const scores = { X: playerScore, O: computerScore };
+            const scores = {};
+            scores[PLAYER_SYMBOL] = playerScore;
+            scores[AI_SYMBOL] = computerScore;
             const boardState = Board.getBoardState();
             
             if (Scoring.shouldEndGame(scores, boardState)) {
@@ -294,52 +335,52 @@ document.addEventListener('DOMContentLoaded', function() {
     // End the game and show result
     function endGame(winner, isFinalPhase = false) {
         gameActive = false;
+
+        // Update AI game history for adaptive strategy
+        const didAIWin = winner === 'computer';
+        AI.updateGameHistory(didAIWin);
         
-        if (isFinalPhase) {
-            // Final 5x5 phase ending
-            const boardState = Board.getBoardState();
-            const isBoardFull = boardState.every(row => row.every(cell => cell !== ''));
-            const endReason = isBoardFull ? 
-                "The board is completely filled." : 
-                "No more three-in-a-rows are possible.";
+        // Add the win-modal class to apply special styling
+        gameOverModal.classList.add('win-modal');
+        
+        // Get random fun message based on outcome
+        let randomMessageIndex = Math.floor(Math.random() * 5);
+        
+        if (winner === 'player') {
+            resultMessage.textContent = WIN_MESSAGES[randomMessageIndex];
             
-            if (winner === 'player') {
-                resultMessage.textContent = "You Win!";
-                resultDetails.innerHTML = `
-                    <p>Final Score: <strong>You ${playerScore}</strong> - ${computerScore} Computer</p>
-                    <p>${endReason}</p>
-                    <p>Congratulations! You've outscored the computer!</p>
-                `;
-            } else if (winner === 'computer') {
-                resultMessage.textContent = "Computer Wins!";
-                resultDetails.innerHTML = `
-                    <p>Final Score: You ${playerScore} - <strong>${computerScore} Computer</strong></p>
-                    <p>${endReason}</p>
-                    <p>The computer outscored you this time.</p>
-                `;
-            } else {
-                resultMessage.textContent = "It's a Tie!";
-                resultDetails.innerHTML = `
-                    <p>Final Score: <strong>You ${playerScore}</strong> - <strong>${computerScore} Computer</strong></p>
-                    <p>${endReason}</p>
-                    <p>An evenly matched game!</p>
-                `;
-            }
+            // Create trophy container with gentle glow
+            const trophyHTML = `
+                <div class="trophy-container">
+                    <div class="trophy-glow"></div>
+                    <span class="trophy-animate">🏆</span>
+                </div>
+                <p>Final Score: <strong>You ${playerScore}</strong> - ${computerScore} Computer</p>
+            `;
+            
+            resultDetails.innerHTML = trophyHTML;
+            
+            // Add confetti animation with winner's symbol color
+            setTimeout(() => {
+                Confetti.addConfetti(gameOverModal, PLAYER_SYMBOL);
+            }, 300);
+            
+        } else if (winner === 'computer') {
+            resultMessage.textContent = LOSS_MESSAGES[randomMessageIndex];
+            resultDetails.innerHTML = `
+                <div class="trophy-container">
+                    <span class="trophy-animate">🤖</span>
+                </div>
+                <p>Final Score: You ${playerScore} - <strong>${computerScore} Computer</strong></p>
+            `;
         } else {
-            // 3x3 phase ending with a winner
-            if (winner === 'player') {
-                resultMessage.textContent = "You Win!";
-                resultDetails.innerHTML = `
-                    <p>You got three in a row in the 3x3 phase!</p>
-                    <p>That's impressive - the computer is designed to never lose at 3x3.</p>
-                `;
-            } else {
-                resultMessage.textContent = "Computer Wins!";
-                resultDetails.innerHTML = `
-                    <p>The computer got three in a row.</p>
-                    <p>Don't worry! The 5x5 phase is more challenging and strategic.</p>
-                `;
-            }
+            resultMessage.textContent = TIE_MESSAGES[randomMessageIndex];
+            resultDetails.innerHTML = `
+                <div class="trophy-container">
+                    <span class="trophy-animate">🤝</span>
+                </div>
+                <p>Final Score: <strong>You ${playerScore}</strong> - <strong>${computerScore} Computer</strong></p>
+            `;
         }
         
         // Show game over modal
@@ -351,8 +392,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function restartGame() {
         // Hide game over modal if visible
         gameOverModal.classList.add('hidden');
+        gameOverModal.classList.remove('win-modal');
         
-        // Re-initialize the game
+        // Start the game with coin toss
         initGame();
     }
     
