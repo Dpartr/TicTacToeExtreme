@@ -90,6 +90,14 @@ const PlaystyleSelection = (function() {
         tournamentButton.id = 'tournament-btn';
         content.appendChild(tournamentButton);
         
+        // Add return to main game link
+        const returnLink = document.createElement('a');
+        returnLink.href = '../';
+        returnLink.className = 'preview-link';
+        returnLink.style.marginTop = '10px';
+        returnLink.textContent = 'Return to Main Game';
+        content.appendChild(returnLink);
+        
         // Add the content to the container
         playstyleContainer.appendChild(content);
         

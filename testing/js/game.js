@@ -339,6 +339,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1500);
     }
     
+    // Fun message constants
+    const WIN_MESSAGES = [
+        "Winner Winner Chicken Winner!",
+        "Don't quit while you're ahead",
+        "I bet you can't do that again!",
+        "Supreme Victory!",
+        "I don't want to play anymore!"
+    ];
+
+    const LOSS_MESSAGES = [
+        "One... more.. game..",
+        "SORRY! Please try again!",
+        "The computer got lucky!",
+        "Don't give up!",
+        "You zigged when you should have zagged!"
+    ];
+
+    const TIE_MESSAGES = [
+        "I demand a recount",
+        "Nothing is worse than a tie",
+        "Cat's game?! I thought we were playing tic-tac-toe EXTREME!",
+        "Touché",
+        "Perfect balance achieved"
+    ];
+
     // End the game and show result
     function endGame(winner, isFinalPhase = false) {
         gameActive = false;
@@ -354,8 +379,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const playstyleText = AI_PLAYSTYLE === 'random' ? 'random strategy' : 
                              `${AI_PLAYSTYLE} playstyle`;
         
+        // Get random fun message based on outcome
+        let randomMessageIndex = Math.floor(Math.random() * 5);
+        
         if (winner === 'player') {
-            resultMessage.textContent = "You Win!";
+            resultMessage.textContent = WIN_MESSAGES[randomMessageIndex];
             
             // Create trophy container with gentle glow
             const trophyHTML = `
@@ -369,13 +397,13 @@ document.addEventListener('DOMContentLoaded', function() {
             
             resultDetails.innerHTML = trophyHTML;
             
-            // Add confetti animation
+            // Add confetti animation with winner's symbol color
             setTimeout(() => {
-                Confetti.addConfetti(gameOverModal);
+                Confetti.addConfetti(gameOverModal, PLAYER_SYMBOL);
             }, 300);
             
         } else if (winner === 'computer') {
-            resultMessage.textContent = "Computer Wins!";
+            resultMessage.textContent = LOSS_MESSAGES[randomMessageIndex];
             resultDetails.innerHTML = `
                 <div class="trophy-container">
                     <span class="trophy-animate">🤖</span>
@@ -384,7 +412,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>The computer was using a ${playstyleText}.</p>
             `;
         } else {
-            resultMessage.textContent = "It's a Tie!";
+            resultMessage.textContent = TIE_MESSAGES[randomMessageIndex];
             resultDetails.innerHTML = `
                 <div class="trophy-container">
                     <span class="trophy-animate">🤝</span>
@@ -403,6 +431,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function restartGame() {
         // Hide game over modal if visible
         gameOverModal.classList.add('hidden');
+        gameOverModal.classList.remove('win-modal');
         
         // Start the game with playstyle selection
         startGame();

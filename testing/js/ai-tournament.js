@@ -983,8 +983,9 @@ const AITournament = (function() {
             };
             
             for (let j = 0; j < playstyles.length; j++) {
-                // Include self-matches to see how styles perform against themselves
+                // Skip self-matches
                 const style2 = playstyles[j];
+                if (style1 === style2) continue;
                 
                 // Simulate the match
                 const matchResult = simulateGame(style1, style2, rounds);
@@ -1037,9 +1038,9 @@ const AITournament = (function() {
         const rankingsSection = createRankingsSection(results);
         resultsContainer.appendChild(rankingsSection);
         
-        // 2. Self-Match Analysis Section
-        const selfMatchSection = createSelfMatchSection(results);
-        resultsContainer.appendChild(selfMatchSection);
+        // Self-Match section has been removed
+        // const selfMatchSection = createSelfMatchSection(results);
+        // if (selfMatchSection) resultsContainer.appendChild(selfMatchSection);
         
         // 3. Matchup Results Section
         const matchupSection = createMatchupSection(results);
@@ -1181,13 +1182,7 @@ const AITournament = (function() {
             // Matchup header
             const header = document.createElement('div');
             header.className = 'matchup-header';
-            // Add a special indicator for self-matches
-            if (style1 === style2) {
-                header.textContent = `${style1.charAt(0).toUpperCase() + style1.slice(1)} vs Self`;
-                header.style.backgroundColor = '#555';
-            } else {
-                header.textContent = `${style1.charAt(0).toUpperCase() + style1.slice(1)} vs ${style2.charAt(0).toUpperCase() + style2.slice(1)}`;
-            }
+            header.textContent = `${style1.charAt(0).toUpperCase() + style1.slice(1)} vs ${style2.charAt(0).toUpperCase() + style2.slice(1)}`;
             card.appendChild(header);
             
             // Matchup results
@@ -1408,88 +1403,10 @@ const AITournament = (function() {
         return section;
     }
     
-    // Create the self-match analysis section
+    // Function to create empty self-match section (kept for compatibility)
     function createSelfMatchSection(results) {
-        const section = document.createElement('div');
-        section.className = 'tournament-section';
-        
-        const heading = document.createElement('h3');
-        heading.textContent = 'Self-Match Analysis';
-        section.appendChild(heading);
-        
-        const description = document.createElement('p');
-        description.textContent = 'How each playstyle performs when playing against itself. This shows the impact of first-move advantage for each style.';
-        section.appendChild(description);
-        
-        const table = document.createElement('table');
-        table.className = 'tournament-table';
-        
-        // Table header
-        const header = document.createElement('tr');
-        ['Playstyle', 'First Player Win %', 'Second Player Win %', 'Tie %', 'First-Move Advantage'].forEach(text => {
-            const th = document.createElement('th');
-            th.textContent = text;
-            header.appendChild(th);
-        });
-        table.appendChild(header);
-        
-        // Add rows for each playstyle
-        playstyles.forEach(style => {
-            const matchKey = `${style} vs ${style}`;
-            if (!results.matchResults[matchKey]) return;
-            
-            const match = results.matchResults[matchKey];
-            const row = document.createElement('tr');
-            
-            // Playstyle
-            const styleCell = document.createElement('td');
-            styleCell.textContent = style.charAt(0).toUpperCase() + style.slice(1);
-            row.appendChild(styleCell);
-            
-            // First Player Win %
-            const firstWinRate = ((match.style1Wins / match.totalGames) * 100).toFixed(1);
-            const firstCell = document.createElement('td');
-            firstCell.textContent = `${firstWinRate}% (${match.style1Wins}/${match.totalGames})`;
-            row.appendChild(firstCell);
-            
-            // Second Player Win %
-            const secondWinRate = ((match.style2Wins / match.totalGames) * 100).toFixed(1);
-            const secondCell = document.createElement('td');
-            secondCell.textContent = `${secondWinRate}% (${match.style2Wins}/${match.totalGames})`;
-            row.appendChild(secondCell);
-            
-            // Tie %
-            const tieRate = ((match.ties / match.totalGames) * 100).toFixed(1);
-            const tieCell = document.createElement('td');
-            tieCell.textContent = `${tieRate}% (${match.ties}/${match.totalGames})`;
-            row.appendChild(tieCell);
-            
-            // First-Move Advantage
-            const advantage = (parseFloat(firstWinRate) - parseFloat(secondWinRate)).toFixed(1);
-            const advantageCell = document.createElement('td');
-            advantageCell.textContent = `${advantage > 0 ? '+' : ''}${advantage}%`;
-            
-            if (Math.abs(advantage) > 5) {
-                advantageCell.className = advantage > 0 ? 'positive-advantage' : 'negative-advantage';
-            }
-            
-            row.appendChild(advantageCell);
-            table.appendChild(row);
-        });
-        
-        section.appendChild(table);
-        
-        // Add summary analysis
-        const summary = document.createElement('div');
-        summary.className = 'tournament-summary';
-        summary.innerHTML = '<h4>Self-Match Insights</h4>';
-        
-        const p = document.createElement('p');
-        p.textContent = 'When a playstyle faces itself, any advantage is purely due to move order. A perfectly symmetric game with perfect play should result in the same outcome regardless of who goes first, but the differences above highlight the inherent biases in each AI strategy when going first vs. second.';
-        summary.appendChild(p);
-        
-        section.appendChild(summary);
-        return section;
+        // Return null instead of a section
+        return null;
     }
     
     // Run tournament and display results
