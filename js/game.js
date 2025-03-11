@@ -2,6 +2,23 @@
  * Main game module that coordinates the entire game flow
  */
 document.addEventListener('DOMContentLoaded', function() {
+    // Check for saved game on startup
+    let savedGame = null;
+    try {
+        // Get saved game state - the Storage module will validate it
+        savedGame = Storage.loadGameState();
+        
+        // Extra check to ensure we don't try to restore an invalid game
+        if (savedGame && (!savedGame.gameActive || !savedGame.boardState)) {
+            console.log('Invalid saved game detected, clearing...');
+            Storage.clearGameState();
+            savedGame = null;
+        }
+    } catch (error) {
+        console.error('Error loading saved game:', error);
+        // If there's any error, clear the storage to be safe
+        Storage.clearGameState();
+    }
     // Fun message constants
     const WIN_MESSAGES = [
         "Winner Winner Chicken Winner!",
@@ -54,6 +71,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize after coin toss
     function initGameAfterCoinToss(playerSym, computerSym, playerFirst) {
+        // Clear any saved game state when starting a new game
+        Storage.clearGameState();
+        
         // Set symbols based on coin toss
         PLAYER_SYMBOL = playerSym;
         AI_SYMBOL = computerSym;
@@ -88,8 +108,93 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize the game
     function initGame() {
-        // Start with coin toss
-        CoinToss.initCoinToss(initGameAfterCoinToss);
+        // Check if there's a saved game to restore
+        if (savedGame) {
+            // Show restore game dialog
+            showRestoreGamePrompt();
+        } else {
+            // Start with coin toss
+            CoinToss.initCoinToss(initGameAfterCoinToss);
+        }
+    }
+    
+    // Show prompt to restore saved game
+    function showRestoreGamePrompt() {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.id = 'restore-game-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h2>Saved Game Found</h2>
+                <p>Would you like to continue your previous game?</p>
+                <div class="modal-buttons">
+                    <button id="restore-game-btn" class="btn">Continue Game</button>
+                    <button id="new-game-btn" class="btn">Start New Game</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Button event listeners
+        document.getElementById('restore-game-btn').addEventListener('click', function() {
+            restoreGame(savedGame);
+            modal.remove();
+        });
+        
+        document.getElementById('new-game-btn').addEventListener('click', function() {
+            // Clear saved game
+            Storage.clearGameState();
+            savedGame = null;
+            // Start new game
+            CoinToss.initCoinToss(initGameAfterCoinToss);
+            modal.remove();
+        });
+    }
+    
+    // Restore saved game state
+    function restoreGame(gameState) {
+        // Set symbols and turn
+        PLAYER_SYMBOL = gameState.playerSymbol;
+        AI_SYMBOL = gameState.aiSymbol;
+        isPlayerTurn = gameState.isPlayerTurn;
+        
+        // Restore game state
+        gameActive = gameState.gameActive;
+        currentPhase = gameState.currentPhase;
+        playerScore = gameState.playerScore;
+        computerScore = gameState.computerScore;
+        lastMoveHighlighted = false; // Always reset this to prevent getting stuck
+        
+        // Restore board state
+        Board.initializeBoard(gameState.boardSize);
+        Board.setBoardState(gameState.boardState);
+        
+        // Update score display visibility
+        if (currentPhase === '5x5') {
+            scoreElement.classList.remove('hidden');
+            updateScoreDisplay();
+        } else {
+            scoreElement.classList.add('hidden');
+        }
+        
+        // Render the board
+        Board.renderBoard();
+        
+        // Update status based on whose turn it is
+        if (isPlayerTurn) {
+            updateStatus(`Your turn! Place a ${PLAYER_SYMBOL}`);
+        } else {
+            updateStatus("Computer's turn...");
+            // Set a slightly longer delay for AI move after restore
+            // This gives players time to understand the board state
+            setTimeout(makeAIMove, 800);
+        }
+        
+        // Let's log the restored state for debugging
+        console.log('Restored game state:', gameState);
+        
+        // Add event listeners
+        addEventListeners();
     }
     
     // Add event listeners to the game elements
@@ -135,20 +240,42 @@ document.addEventListener('DOMContentLoaded', function() {
     // Make AI's move
     function makeAIMove() {
         setTimeout(() => {
-            const boardState = Board.getBoardState();
-            const boardSize = Board.getBoardSize();
-            
-            // Get the best move for AI
-            const bestMove = AI.getBestMove(boardState, boardSize, playerScore, computerScore);
-            
-            if (bestMove) {
-                Board.makeMove(bestMove.row, bestMove.col, AI_SYMBOL);
-                Board.renderBoard();
+            // Only proceed if it's still the computer's turn
+            // This prevents double moves after loading a saved game
+            if (!isPlayerTurn && gameActive) {
+                const boardState = Board.getBoardState();
+                const boardSize = Board.getBoardSize();
                 
-                // Process after AI's move
-                processGameStateAfterMove();
+                // Get the best move for AI
+                const bestMove = AI.getBestMove(boardState, boardSize, playerScore, computerScore);
+                
+                if (bestMove) {
+                    Board.makeMove(bestMove.row, bestMove.col, AI_SYMBOL);
+                    Board.renderBoard();
+                    
+                    // Process after AI's move
+                    processGameStateAfterMove();
+                }
             }
         }, 500); // Slight delay for better UX
+    }
+    
+    // Save current game state
+    function saveCurrentGameState() {
+        const gameState = {
+            playerSymbol: PLAYER_SYMBOL,
+            aiSymbol: AI_SYMBOL,
+            isPlayerTurn: isPlayerTurn,
+            gameActive: gameActive,
+            currentPhase: currentPhase,
+            playerScore: playerScore,
+            computerScore: computerScore,
+            boardSize: Board.getBoardSize(),
+            boardState: Board.getBoardState(),
+            timestamp: Date.now()
+        };
+        
+        Storage.saveGameState(gameState);
     }
     
     // Process game state after each move
@@ -270,6 +397,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function togglePlayer() {
         isPlayerTurn = !isPlayerTurn;
         
+        // Save game state AFTER toggling the turn but BEFORE the AI makes its move
+        // This ensures we save who's turn it WILL be next
+        if (gameActive) {
+            saveCurrentGameState();
+        }
+        
         if (isPlayerTurn) {
             updateStatus(`Your turn! Place a ${PLAYER_SYMBOL}`);
         } else {
@@ -335,6 +468,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // End the game and show result
     function endGame(winner, isFinalPhase = false) {
         gameActive = false;
+        
+        // Clear saved game when game ends
+        Storage.clearGameState();
+        // Also clear the savedGame variable to prevent it from showing up on refresh
+        savedGame = null;
 
         // Update AI game history for adaptive strategy
         const didAIWin = winner === 'computer';
@@ -393,6 +531,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Hide game over modal if visible
         gameOverModal.classList.add('hidden');
         gameOverModal.classList.remove('win-modal');
+        
+        // Clear any saved game
+        Storage.clearGameState();
+        // Also clear the savedGame variable
+        savedGame = null;
         
         // Start the game with coin toss
         initGame();
