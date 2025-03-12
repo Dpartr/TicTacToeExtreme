@@ -135,6 +135,22 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/firebase-analytics.js"></script>
+    
+    <!-- Debug Info -->
+    <script>
+        console.log('Firebase scripts loaded');
+        if (typeof firebase !== 'undefined') {
+            console.log('Firebase object available');
+        } else {
+            console.error('Firebase object not available - check CDN links');
+        }
+        
+        if (typeof firebaseConfig !== 'undefined') {
+            console.log('Firebase config loaded with keys:', Object.keys(firebaseConfig).join(', '));
+        } else {
+            console.error('Firebase config not loaded - check firebase-config.js');
+        }
+    </script>
 
     <!-- Game Scripts -->
     <script src="js/board.js"></script>
@@ -150,7 +166,14 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize Firebase Analytics
             if (typeof Analytics !== 'undefined' && Analytics.initialize) {
-                Analytics.initialize();
+                console.log('Starting Firebase Analytics initialization...');
+                Analytics.initialize().then(result => {
+                    console.log('Firebase initialization result:', result);
+                }).catch(error => {
+                    console.error('Error during Firebase initialization:', error);
+                });
+            } else {
+                console.error('Analytics object not found or initialize method missing');
             }
             
             const statsBtn = document.getElementById('stats-btn');

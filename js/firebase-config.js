@@ -9,3 +9,6 @@ const firebaseConfig = {
   messagingSenderId: "PLACEHOLDER_MESSAGING_SENDER_ID",
   appId: "PLACEHOLDER_APP_ID"
 };
+
+// This will help with debugging
+console.log('Local firebase-config.js loaded - this should be replaced during deployment');

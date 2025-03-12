@@ -14,9 +14,18 @@ const Analytics = (function() {
         if (initialized) return true;
         
         try {
-            // Import the required Firebase modules
-            await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js');
-            await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+            console.log('Initializing Firebase Analytics...');
+            
+            // Check if firebaseConfig is available
+            if (typeof firebaseConfig === 'undefined') {
+                console.error('Firebase config is not defined! Check if firebase-config.js is loaded.');
+                return false;
+            }
+            
+            console.log('Firebase config found:', JSON.stringify({
+                projectId: firebaseConfig.projectId || 'missing',
+                apiKeyLength: firebaseConfig.apiKey ? firebaseConfig.apiKey.length : 0
+            }));
             
             // Initialize Firebase with config
             // Note: firebaseConfig is defined in the separate firebase-config.js file
@@ -24,7 +33,20 @@ const Analytics = (function() {
             firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
             
+            // Test connection to Firestore
+            try {
+                await db.collection('test').doc('test').set({
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    test: true
+                });
+                console.log('Successfully wrote test document to Firestore');
+            } catch (firestoreError) {
+                console.error('Error writing to Firestore:', firestoreError);
+                throw firestoreError;
+            }
+            
             initialized = true;
+            console.log('Firebase Analytics initialized successfully');
             
             // Track the page view once initialized
             trackPageView();
