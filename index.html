@@ -22,24 +22,24 @@
         }
         
         body.light-theme {
-            --bg-color: #f5f5f5;
+            --bg-color: #e8e8e8;
             --text-color: #333;
             --header-color: #2c3e50;
-            --cell-bg: white;
+            --cell-bg: #f2f2f2;
             --cell-border: #2c3e50;
-            --cell-hover: #f0f0f0;
+            --cell-hover: #e0e0e0;
             --x-color: #e74c3c;
             --o-color: #3498db;
             --highlight-color-x: rgba(231, 76, 60, 0.3);
             --highlight-color-o: rgba(52, 152, 219, 0.3);
             --highlight-border-x: #e74c3c;
             --highlight-border-o: #3498db;
-            --score-bg: #e7e7e7;
+            --score-bg: #d9d9d9;
             --button-bg: #3498db;
             --button-hover: #2980b9;
-            --button-text: white;
+            --button-text: #f2f2f2;
             --modal-bg: rgba(0, 0, 0, 0.7);
-            --modal-content-bg: white;
+            --modal-content-bg: #ececec;
         }
         
         body.dark-theme {
@@ -276,14 +276,16 @@
         .modal-close {
             margin-top: 15px;
             padding: 8px 16px;
-            background-color: #ddd;
+            background-color: var(--button-bg);
+            color: var(--button-text);
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-weight: bold;
         }
         
         .modal-close:hover {
-            background-color: #ccc;
+            background-color: var(--button-hover);
         }
     </style>
 </head>
@@ -307,12 +309,12 @@
         
         <div class="controls">
             <button id="restart-btn">Restart Game</button>
-            <button id="stats-btn" class="stats-button">Stats</button>
+            <button id="stats-btn" class="stats-button">Stats <span class="preview-badge">NEW</span></button>
             <button id="theme-toggle-btn" class="theme-toggle">🌙 Dark</button>
         </div>
         
         <div>
-            <a href="testing/" class="preview-link">Try Preview Build <span class="preview-badge">NEW</span></a>
+            <a href="testing/" class="preview-link">Enemy AI Testing</a>
         </div>
         
         <div id="game-over" class="modal hidden">
