@@ -717,11 +717,17 @@ const AI = (function() {
         }
     }
     
+    // Get the current AI playstyle
+    function getStyle() {
+        return PLAYSTYLE;
+    }
+    
     // Public API
     return {
         getBestMove,
         checkWinner,
         setSymbols,
-        updateGameHistory
+        updateGameHistory,
+        getStyle
     };
 })();

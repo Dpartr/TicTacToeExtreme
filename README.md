@@ -1,50 +1,63 @@
-# Tic Tac Toe Extreme
+# TicTacToeExtreme
 
-A fun twist on the classic Tic Tac Toe game, featuring an expanding board and scoring system.
+A feature-rich Tic Tac Toe game with advanced gameplay mechanics, including a 3x3 to 5x5 expansion feature and AI opponent.
 
-## Game Rules
+## Recent Updates
 
-### Phase 1: Classic 3x3
-- Start with a classic 3x3 Tic Tac Toe game.
-- Get three in a row to win.
-- If nobody gets three in a row (cat's game), the board expands.
+- Added Firebase analytics to track visitor statistics
+- Added a stats button to show site usage metrics
+- Implemented game event tracking to analyze gameplay patterns
 
-### Phase 2: Expanded 5x5
-- The board expands to 5x5.
-- The goal changes to get the most "three in a rows".
-- A four in a row counts as two "three in a rows".
-- A five in a row counts as three "three in a rows".
-- The game ends when the board is filled or one player has a sufficient lead.
+## Firebase Integration
 
-## Features
+The game now uses Firebase Firestore to track:
+- Daily visitor counts
+- Unique visitor counts
+- Game events (starts, completions, phase transitions)
 
-- Smart computer opponent that never loses in the 3x3 phase
-- Strategic AI for the 5x5 phase
-- Responsive design that works on mobile and desktop
-- Visual highlighting of successful "three in a rows"
-- Score tracking in the 5x5 phase
+## Setup for Development
 
-## Technologies Used
+1. Clone this repository
+2. Create a Firebase project at [https://console.firebase.google.com/](https://console.firebase.google.com/)
+3. Add a web app to your Firebase project
+4. Enable Firestore Database in your Firebase project
+5. Add the following secrets to your GitHub repository:
+   - FIREBASE_API_KEY
+   - FIREBASE_AUTH_DOMAIN
+   - FIREBASE_PROJECT_ID
+   - FIREBASE_STORAGE_BUCKET
+   - FIREBASE_MESSAGING_SENDER_ID
+   - FIREBASE_APP_ID
 
-- HTML5
-- CSS3
-- JavaScript (vanilla, no frameworks)
+The GitHub workflow will automatically inject these secrets into the code during deployment.
 
-## How to Play
+## Firestore Security Rules
 
-1. Click on any cell to place your X.
-2. The computer will respond with an O.
-3. Try to get three in a row in the first phase.
-4. If the game ties, the board expands to 5x5.
-5. In the 5x5 phase, try to get more "three in a rows" than the computer.
+Make sure to configure the following security rules in your Firebase Firestore:
 
-## Deployment
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read/write access to metrics collection
+    match /metrics/{document=**} {
+      allow read: if true;
+      allow write: if true;
+    }
+    // For tracking unique visitors
+    match /visits/{document=**} {
+      allow read: if false; // Keep visit data private
+      allow write: if true; // Allow writing visit data
+    }
+    // For tracking game events
+    match /events/{document=**} {
+      allow read: if false; // Keep event data private
+      allow write: if true; // Allow writing event data
+    }
+  }
+}
+```
 
-This project is deployed using GitHub Pages:
+## Local Development Without Firebase
 
-To Play, visit https://dpartr.github.io/TicTacToeExtreme/
-
-## Acknowledgments
-
-- Inspired by the classic game of Tic Tac Toe
-- Created as a fun project to explore game development with vanilla JavaScript
+For local development without Firebase, the code will gracefully handle the missing configuration by skipping analytics tracking.

@@ -74,6 +74,23 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear any saved game state when starting a new game
         Storage.clearGameState();
         
+        // Track game start with Analytics if available
+        if (typeof Analytics !== 'undefined' && Analytics.trackGameEvent) {
+            // Determine AI style - this assumes your AI module has a getStyle method
+            // If it doesn't, you'll need to add this later
+            let aiStyle = 'balanced'; // Default
+            if (typeof AI !== 'undefined' && AI.getStyle) {
+                aiStyle = AI.getStyle();
+            }
+            
+            Analytics.trackGameEvent('gameStarted', {
+                playerSymbol: playerSym,
+                computerSymbol: computerSym,
+                playerFirst: playerFirst,
+                aiStyle: aiStyle
+            });
+        }
+        
         // Set symbols based on coin toss
         PLAYER_SYMBOL = playerSym;
         AI_SYMBOL = computerSym;
@@ -367,6 +384,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update status
         updateStatus("It's a tie! Expanding to 5x5 board");
         
+        // Track phase transition with Analytics if available
+        if (typeof Analytics !== 'undefined' && Analytics.trackGameEvent) {
+            Analytics.trackGameEvent('phaseTransition', {
+                from: '3x3',
+                to: '5x5'
+            });
+        }
+        
         // Expand the board
         Board.expandBoard();
         Board.renderBoard();
@@ -477,6 +502,26 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update AI game history for adaptive strategy
         const didAIWin = winner === 'computer';
         AI.updateGameHistory(didAIWin);
+        
+        // Track game completion with Analytics if available
+        if (typeof Analytics !== 'undefined' && Analytics.trackGameEvent) {
+            // Determine AI style - this assumes your AI module has a getStyle method
+            let aiStyle = 'balanced'; // Default
+            if (typeof AI !== 'undefined' && AI.getStyle) {
+                aiStyle = AI.getStyle();
+            }
+            
+            Analytics.trackGameEvent('gameCompleted', {
+                winner: winner,
+                isFinalPhase: isFinalPhase,
+                playerScore: playerScore,
+                computerScore: computerScore,
+                boardSize: Board.getBoardSize(),
+                playerSymbol: PLAYER_SYMBOL,
+                computerSymbol: AI_SYMBOL,
+                aiStyle: aiStyle
+            });
+        }
         
         // Add the win-modal class to apply special styling
         gameOverModal.classList.add('win-modal');
