@@ -65,7 +65,9 @@
         
         /* Stats Modal Styles */
         #stats-modal .modal-content {
-            max-width: 500px;
+            max-width: 800px;
+            max-height: 85vh;
+            overflow-y: auto;
         }
         
         #stats-content {
@@ -150,7 +152,13 @@
             position: relative;
         }
         
-        /* Stats Content Sections */
+        /* Stats Grid Layout */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
         .stat-section {
             margin-bottom: 20px;
             background-color: var(--cell-bg);
@@ -221,7 +229,7 @@
         }
         
         /* Responsive Design */
-        @media (max-width: 500px) {
+        @media (max-width: 600px) {
             .stats-tabs {
                 flex-wrap: wrap;
             }
@@ -236,6 +244,14 @@
             .period-btn {
                 padding: 5px 7px;
                 font-size: 0.8em;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-container {
+                height: 200px !important;
             }
         }
         

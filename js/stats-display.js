@@ -202,6 +202,12 @@ document.addEventListener('DOMContentLoaded', function() {
         function renderGameTab(stats, tabElement) {
             let html = '';
             
+            // Create a two-column layout
+            html += '<div class="stats-grid">';
+            
+            // First column - Win Streak and Game Outcomes pie chart
+            html += '<div>';
+            
             // Win Streak Section
             html += `
             <div class="win-streak">
@@ -209,19 +215,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="streak-value">${stats.winStreak || 0}</div>
             </div>`;
             
-            // Game Outcomes Section with Chart
+            // Game Outcomes chart
             html += `<div class="stat-section">
                 <div class="section-title">Game Outcomes</div>`;
             
             if (stats.totalGames > 0) {
-                html += `<div class="stat-item">
-                    <span class="stat-label">Total Games Played:</span>
-                    <span>${stats.totalGames}</span>
-                </div>`;
-                
-                // Add chart container
-                html += `<div class="chart-container">
+                html += `<div class="chart-container" style="height: 200px;">
                     <canvas id="outcome-chart"></canvas>
+                </div>`;
+            } else {
+                html += `<p>No games have been completed yet.</p>`;
+            }
+            html += `</div>`;
+            
+            html += '</div>'; // End first column
+            
+            // Second column - Detailed game outcomes stats
+            html += '<div>';
+            
+            // Game Stats Section
+            html += `<div class="stat-section">
+                <div class="section-title">Game Statistics</div>`;
+            
+            if (stats.totalGames > 0) {
+                html += `<div class="stat-item">
+                    <span class="stat-label">Total Games:</span>
+                    <span>${stats.totalGames}</span>
                 </div>`;
                 
                 html += `<div class="stat-item">
@@ -247,8 +266,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="progress-bar" style="width: ${stats.tieRate}%"></div>
                     </div>
                 </div>`;
-            } else {
-                html += `<p>No games have been completed yet.</p>`;
             }
             html += `</div>`;
             
@@ -266,6 +283,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>`;
             }
+            
+            html += '</div>'; // End second column
+            
+            html += '</div>'; // End grid
             
             tabElement.innerHTML = html;
             
@@ -298,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                position: 'right',
+                                position: 'bottom',
                                 labels: {
                                     color: getComputedStyle(document.body).getPropertyValue('--text-color')
                                 }
@@ -315,13 +336,19 @@ document.addEventListener('DOMContentLoaded', function() {
         function renderPerformanceTab(stats, tabElement) {
             let html = '';
             
+            // Create a two-column layout
+            html += '<div class="stats-grid">';
+            
+            // First column - Symbol Performance
+            html += '<div>';
+            
             // Symbol Performance Section
             html += `<div class="stat-section">
                 <div class="section-title">Global Symbol Performance</div>`;
             
             if (stats.playerGamesAsX > 0 || stats.playerGamesAsO > 0) {
                 // Add chart container
-                html += `<div class="chart-container">
+                html += `<div class="chart-container" style="height: 180px;">
                     <canvas id="symbol-chart"></canvas>
                 </div>`;
                 
@@ -345,67 +372,67 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             html += `</div>`;
             
-            // AI Style Performance Section with Detailed Breakdown
+            html += '</div>'; // End first column
+            
+            // Second column - AI Style Performance
+            html += '<div>';
+            
+            // AI Style Performance Section
             html += `<div class="stat-section">
                 <div class="section-title">Global AI Style Performance</div>`;
             
             if (stats.aggressiveTotal > 0 || stats.defensiveTotal > 0 || stats.balancedTotal > 0 || stats.randomTotal > 0) {
                 // Add chart container for AI style breakdown
-                html += `<div class="chart-container" style="height: 250px;">
+                html += `<div class="chart-container" style="height: 180px;">
                     <canvas id="style-chart"></canvas>
                 </div>`;
                 
-                // Display AI styles with their corresponding emojis
+                // Display AI styles with their corresponding emojis in a compact form
                 if (stats.aggressiveTotal > 0) {
                     html += `<div class="stat-item">
                         <span class="stat-label"><span class="ai-style-icon">⚔️</span> Aggressive:</span>
-                        <span>${stats.aggressiveWins}/${stats.aggressiveTotal} (${stats.aggressiveWinRate}% wins)</span>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: ${stats.aggressiveWinRate}%"></div>
-                        </div>
+                        <span>${stats.aggressiveWins}/${stats.aggressiveTotal} (${stats.aggressiveWinRate}%)</span>
                     </div>`;
                 }
                 
                 if (stats.defensiveTotal > 0) {
                     html += `<div class="stat-item">
                         <span class="stat-label"><span class="ai-style-icon">🛡️</span> Defensive:</span>
-                        <span>${stats.defensiveWins}/${stats.defensiveTotal} (${stats.defensiveWinRate}% wins)</span>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: ${stats.defensiveWinRate}%"></div>
-                        </div>
+                        <span>${stats.defensiveWins}/${stats.defensiveTotal} (${stats.defensiveWinRate}%)</span>
                     </div>`;
                 }
                 
                 if (stats.balancedTotal > 0) {
                     html += `<div class="stat-item">
                         <span class="stat-label"><span class="ai-style-icon">⚖️</span> Balanced:</span>
-                        <span>${stats.balancedWins}/${stats.balancedTotal} (${stats.balancedWinRate}% wins)</span>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: ${stats.balancedWinRate}%"></div>
-                        </div>
+                        <span>${stats.balancedWins}/${stats.balancedTotal} (${stats.balancedWinRate}%)</span>
                     </div>`;
                 }
                 
                 if (stats.randomTotal > 0) {
                     html += `<div class="stat-item">
                         <span class="stat-label"><span class="ai-style-icon">🎲</span> Random:</span>
-                        <span>${stats.randomWins}/${stats.randomTotal} (${stats.randomWinRate}% wins)</span>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: ${stats.randomWinRate}%"></div>
-                        </div>
+                        <span>${stats.randomWins}/${stats.randomTotal} (${stats.randomWinRate}%)</span>
                     </div>`;
                 }
-                
-                // Detailed Symbol vs. AI Style performance section
-                html += `<h4 class="subsection-title">Player Performance By Symbol & AI Style</h4>`;
-                html += `<div class="chart-container" style="height: 300px;">
-                    <canvas id="detailed-style-chart"></canvas>
-                </div>`;
-                
             } else {
                 html += `<p>No AI style performance data available yet.</p>`;
             }
             html += `</div>`;
+            
+            html += '</div>'; // End second column
+            
+            html += '</div>'; // End grid
+            
+            // Add the detailed breakdown in full width
+            if (stats.aggressiveTotal > 0 || stats.defensiveTotal > 0 || stats.balancedTotal > 0 || stats.randomTotal > 0) {
+                html += `<div class="stat-section">
+                    <div class="section-title">Player Performance By Symbol & AI Style</div>
+                    <div class="chart-container" style="height: 250px;">
+                        <canvas id="detailed-style-chart"></canvas>
+                    </div>
+                </div>`;
+            }
             
             tabElement.innerHTML = html;
             
@@ -657,14 +684,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        /**
-         * Render the Site Stats tab content
-         */
         function renderSiteTab(stats, tabElement) {
             let html = '';
             
+            // Create a two-column layout for site stats
+            html += '<div class="stats-grid">';
+            
+            // First column - Visit Metrics
+            html += '<div>';
             html += `<div class="stat-section">
-                <div class="section-title">Site Metrics</div>
+                <div class="section-title">Visit Metrics</div>
                 <div class="stat-item">
                     <span class="stat-label">Total Visits:</span>
                     <span>${stats.totalVisits}</span>
@@ -673,6 +702,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span class="stat-label">Unique Visitors:</span>
                     <span>${stats.totalUniques}</span>
                 </div>
+            </div>`;
+            html += '</div>'; // End first column
+            
+            // Second column - Today's Activity
+            html += '<div>';
+            html += `<div class="stat-section">
+                <div class="section-title">Today's Activity</div>
                 <div class="stat-item">
                     <span class="stat-label">Today's Visits:</span>
                     <span>${stats.todayVisits}</span>
@@ -682,6 +718,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span>${stats.todayUniques || 0}</span>
                 </div>
             </div>`;
+            html += '</div>'; // End second column
+            
+            html += '</div>'; // End grid
             
             tabElement.innerHTML = html;
         }
