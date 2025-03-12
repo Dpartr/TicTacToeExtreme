@@ -22,24 +22,25 @@
         }
         
         body.light-theme {
-            --bg-color: #e8e8e8;
-            --text-color: #333;
-            --header-color: #2c3e50;
-            --cell-bg: #f2f2f2;
-            --cell-border: #2c3e50;
-            --cell-hover: #e0e0e0;
-            --x-color: #e74c3c;
-            --o-color: #3498db;
-            --highlight-color-x: rgba(231, 76, 60, 0.3);
-            --highlight-color-o: rgba(52, 152, 219, 0.3);
-            --highlight-border-x: #e74c3c;
-            --highlight-border-o: #3498db;
-            --score-bg: #d9d9d9;
-            --button-bg: #3498db;
-            --button-hover: #2980b9;
-            --button-text: #f2f2f2;
-            --modal-bg: rgba(0, 0, 0, 0.7);
-            --modal-content-bg: #ececec;
+            --bg-color: #e6e6e8;
+            --text-color: #4a4a4a;
+            --header-color: #4a4a4a;
+            --cell-bg: #eeeef0;
+            --cell-border: #bcbcc0;
+            --cell-hover: #dedee2;
+            --x-color: #c57b57;
+            --o-color: #6f9cb7;
+            --highlight-color-x: rgba(197, 123, 87, 0.2);
+            --highlight-color-o: rgba(111, 156, 183, 0.2);
+            --highlight-border-x: #c57b57;
+            --highlight-border-o: #6f9cb7;
+            --score-bg: #dedee2;
+            --button-bg: #6f9cb7;
+            --button-hover: #5d8ba6;
+            --button-text: #ffffff;
+            --modal-bg: rgba(0, 0, 0, 0.6);
+            --modal-content-bg: #eeeef0;
+            --shadow-color: rgba(0, 0, 0, 0.06);
         }
         
         body.dark-theme {
@@ -68,6 +69,8 @@
             max-width: 800px;
             max-height: 85vh;
             overflow-y: auto;
+            box-shadow: 0 4px 16px var(--shadow-color);
+            border-radius: 10px;
         }
         
         #stats-content {
@@ -164,7 +167,7 @@
             background-color: var(--cell-bg);
             border-radius: 8px;
             padding: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px var(--shadow-color);
         }
         
         .section-title {
