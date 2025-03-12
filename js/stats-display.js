@@ -315,16 +315,47 @@ document.addEventListener('DOMContentLoaded', function() {
         function renderPerformanceTab(stats, tabElement) {
             let html = '';
             
-            // AI Style Performance Section
+            // Symbol Performance Section
             html += `<div class="stat-section">
-                <div class="section-title">AI Style Performance</div>`;
+                <div class="section-title">Global Symbol Performance</div>`;
             
-            if (stats.aggressiveTotal > 0 || stats.defensiveTotal > 0 || stats.balancedTotal > 0) {
+            if (stats.playerGamesAsX > 0 || stats.playerGamesAsO > 0) {
                 // Add chart container
+                html += `<div class="chart-container">
+                    <canvas id="symbol-chart"></canvas>
+                </div>`;
+                
+                html += `<div class="stat-item">
+                    <span class="stat-label">All Players as X:</span>
+                    <span>${stats.playerWinsAsX}/${stats.playerGamesAsX} (${stats.playerWinRateAsX}%)</span>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: ${stats.playerWinRateAsX}%"></div>
+                    </div>
+                </div>`;
+                
+                html += `<div class="stat-item">
+                    <span class="stat-label">All Players as O:</span>
+                    <span>${stats.playerWinsAsO}/${stats.playerGamesAsO} (${stats.playerWinRateAsO}%)</span>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: ${stats.playerWinRateAsO}%"></div>
+                    </div>
+                </div>`;
+            } else {
+                html += `<p>No symbol performance data available yet.</p>`;
+            }
+            html += `</div>`;
+            
+            // AI Style Performance Section with Detailed Breakdown
+            html += `<div class="stat-section">
+                <div class="section-title">Global AI Style Performance</div>`;
+            
+            if (stats.aggressiveTotal > 0 || stats.defensiveTotal > 0 || stats.balancedTotal > 0 || stats.randomTotal > 0) {
+                // Add chart container for AI style breakdown
                 html += `<div class="chart-container" style="height: 250px;">
                     <canvas id="style-chart"></canvas>
                 </div>`;
                 
+                // Display AI styles with their corresponding emojis
                 if (stats.aggressiveTotal > 0) {
                     html += `<div class="stat-item">
                         <span class="stat-label"><span class="ai-style-icon">⚔️</span> Aggressive:</span>
@@ -354,6 +385,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>`;
                 }
+                
+                if (stats.randomTotal > 0) {
+                    html += `<div class="stat-item">
+                        <span class="stat-label"><span class="ai-style-icon">🎲</span> Random:</span>
+                        <span>${stats.randomWins}/${stats.randomTotal} (${stats.randomWinRate}% wins)</span>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: ${stats.randomWinRate}%"></div>
+                        </div>
+                    </div>`;
+                }
+                
+                // Detailed Symbol vs. AI Style performance section
+                html += `<h4 class="subsection-title">Player Performance By Symbol & AI Style</h4>`;
+                html += `<div class="chart-container" style="height: 300px;">
+                    <canvas id="detailed-style-chart"></canvas>
+                </div>`;
+                
             } else {
                 html += `<p>No AI style performance data available yet.</p>`;
             }
@@ -361,8 +409,70 @@ document.addEventListener('DOMContentLoaded', function() {
             
             tabElement.innerHTML = html;
             
-            // Create bar chart for AI style data
-            if (stats.aggressiveTotal > 0 || stats.defensiveTotal > 0 || stats.balancedTotal > 0) {
+            // Create symbol performance chart
+            if (stats.playerGamesAsX > 0 || stats.playerGamesAsO > 0) {
+                const symbolctx = document.getElementById('symbol-chart').getContext('2d');
+                
+                new Chart(symbolctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['As X', 'As O'],
+                        datasets: [{
+                            label: 'Win Rate (%)',
+                            data: [
+                                parseFloat(stats.playerWinRateAsX),
+                                parseFloat(stats.playerWinRateAsO)
+                            ],
+                            backgroundColor: [
+                                getComputedStyle(document.body).getPropertyValue('--x-color'),
+                                getComputedStyle(document.body).getPropertyValue('--o-color')
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--text-color')
+                                },
+                                grid: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--cell-border') + '33' // 20% opacity
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--text-color')
+                                },
+                                grid: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--cell-border') + '33' // 20% opacity
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    afterLabel: function(context) {
+                                        const index = context.dataIndex;
+                                        if (index === 0) {
+                                            return `Wins: ${stats.playerWinsAsX} / ${stats.playerGamesAsX} games`;
+                                        } else {
+                                            return `Wins: ${stats.playerWinsAsO} / ${stats.playerGamesAsO} games`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Create AI style performance chart (bar chart)
+            if (stats.aggressiveTotal > 0 || stats.defensiveTotal > 0 || stats.balancedTotal > 0 || stats.randomTotal > 0) {
                 const ctx = document.getElementById('style-chart').getContext('2d');
                 
                 // Destroy previous chart instance if it exists
@@ -375,12 +485,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const winRates = [];
                 const totals = [];
                 const icons = [];
+                const colors = [];
                 
                 if (stats.aggressiveTotal > 0) {
                     labels.push('Aggressive');
                     winRates.push(parseFloat(stats.aggressiveWinRate));
                     totals.push(stats.aggressiveTotal);
                     icons.push('⚔️');
+                    colors.push('#e74c3c'); // Red
                 }
                 
                 if (stats.defensiveTotal > 0) {
@@ -388,6 +500,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     winRates.push(parseFloat(stats.defensiveWinRate));
                     totals.push(stats.defensiveTotal);
                     icons.push('🛡️');
+                    colors.push('#3498db'); // Blue
                 }
                 
                 if (stats.balancedTotal > 0) {
@@ -395,6 +508,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     winRates.push(parseFloat(stats.balancedWinRate));
                     totals.push(stats.balancedTotal);
                     icons.push('⚖️');
+                    colors.push('#2ecc71'); // Green
+                }
+                
+                if (stats.randomTotal > 0) {
+                    labels.push('Random');
+                    winRates.push(parseFloat(stats.randomWinRate));
+                    totals.push(stats.randomTotal);
+                    icons.push('🎲');
+                    colors.push('#9b59b6'); // Purple
                 }
                 
                 // Create new chart
@@ -405,7 +527,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         datasets: [{
                             label: 'Win Rate (%)',
                             data: winRates,
-                            backgroundColor: getComputedStyle(document.body).getPropertyValue('--button-bg'),
+                            backgroundColor: colors,
                             borderWidth: 1
                         }]
                     },
@@ -440,7 +562,92 @@ document.addEventListener('DOMContentLoaded', function() {
                                 callbacks: {
                                     afterLabel: function(context) {
                                         const index = context.dataIndex;
-                                        return `Total Games: ${totals[index]}`;
+                                        return `Computer Wins: ${index === 0 ? stats.aggressiveWins : 
+                                                        index === 1 ? stats.defensiveWins : 
+                                                        index === 2 ? stats.balancedWins : 
+                                                        stats.randomWins} / ${totals[index]} games`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Create detailed chart for player performance against each AI style
+                const detailedCtx = document.getElementById('detailed-style-chart').getContext('2d');
+                
+                // Format the data for the grouped bar chart
+                const dataByStyle = {
+                    labels: ['Aggressive', 'Defensive', 'Balanced', 'Random'],
+                    datasets: [
+                        {
+                            label: 'As X',
+                            backgroundColor: getComputedStyle(document.body).getPropertyValue('--x-color'),
+                            data: [
+                                parseFloat(stats.aiPerformance.playerAsX.aggressive?.winRate || 0),
+                                parseFloat(stats.aiPerformance.playerAsX.defensive?.winRate || 0),
+                                parseFloat(stats.aiPerformance.playerAsX.balanced?.winRate || 0),
+                                parseFloat(stats.aiPerformance.playerAsX.random?.winRate || 0)
+                            ]
+                        },
+                        {
+                            label: 'As O',
+                            backgroundColor: getComputedStyle(document.body).getPropertyValue('--o-color'),
+                            data: [
+                                parseFloat(stats.aiPerformance.playerAsO.aggressive?.winRate || 0),
+                                parseFloat(stats.aiPerformance.playerAsO.defensive?.winRate || 0),
+                                parseFloat(stats.aiPerformance.playerAsO.balanced?.winRate || 0),
+                                parseFloat(stats.aiPerformance.playerAsO.random?.winRate || 0)
+                            ]
+                        }
+                    ]
+                };
+                
+                new Chart(detailedCtx, {
+                    type: 'bar',
+                    data: dataByStyle,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                title: {
+                                    display: true,
+                                    text: 'Win Rate (%)',
+                                    color: getComputedStyle(document.body).getPropertyValue('--text-color')
+                                },
+                                ticks: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--text-color')
+                                },
+                                grid: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--cell-border') + '33' // 20% opacity
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--text-color')
+                                },
+                                grid: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--cell-border') + '33' // 20% opacity
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    afterLabel: function(context) {
+                                        const datasetIndex = context.datasetIndex;
+                                        const dataIndex = context.dataIndex;
+                                        const symbolKey = datasetIndex === 0 ? 'playerAsX' : 'playerAsO';
+                                        const styleKey = ['aggressive', 'defensive', 'balanced', 'random'][dataIndex];
+                                        
+                                        if (stats.aiPerformance[symbolKey][styleKey]) {
+                                            const data = stats.aiPerformance[symbolKey][styleKey];
+                                            return `Wins: ${data.wins} / ${data.total} games`;
+                                        }
+                                        return 'No data';
                                     }
                                 }
                             }

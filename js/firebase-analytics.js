@@ -217,6 +217,26 @@ const Analytics = (function() {
             let ties = 0;
             let playerWinsAsX = 0;
             let playerWinsAsO = 0;
+            let playerGamesAsX = 0;
+            let playerGamesAsO = 0;
+            
+            // Advanced performance metrics
+            const aiPerformance = {
+                // Player as X performance against different AI styles
+                playerAsX: {
+                    aggressive: { wins: 0, losses: 0, ties: 0, total: 0 },
+                    defensive: { wins: 0, losses: 0, ties: 0, total: 0 },
+                    balanced: { wins: 0, losses: 0, ties: 0, total: 0 },
+                    random: { wins: 0, losses: 0, ties: 0, total: 0 }
+                },
+                // Player as O performance against different AI styles
+                playerAsO: {
+                    aggressive: { wins: 0, losses: 0, ties: 0, total: 0 },
+                    defensive: { wins: 0, losses: 0, ties: 0, total: 0 },
+                    balanced: { wins: 0, losses: 0, ties: 0, total: 0 },
+                    random: { wins: 0, losses: 0, ties: 0, total: 0 }
+                }
+            };
             
             // AI style performance
             let aggressiveTotal = 0;
@@ -225,18 +245,28 @@ const Analytics = (function() {
             let defensiveWins = 0;
             let balancedTotal = 0;
             let balancedWins = 0;
+            let randomTotal = 0;
+            let randomWins = 0;
             
             gamesQuery.forEach(doc => {
                 const gameData = doc.data();
+                
+                // Track player symbol data
+                const playerSymbol = gameData.playerSymbol || "";
+                if (playerSymbol === 'X') {
+                    playerGamesAsX++;
+                } else if (playerSymbol === 'O') {
+                    playerGamesAsO++;
+                }
                 
                 // Count outcomes
                 if (gameData.winner === 'player') {
                     playerWins++;
                     
                     // Track symbol
-                    if (gameData.playerSymbol === 'X') {
+                    if (playerSymbol === 'X') {
                         playerWinsAsX++;
-                    } else if (gameData.playerSymbol === 'O') {
+                    } else if (playerSymbol === 'O') {
                         playerWinsAsO++;
                     }
                 } else if (gameData.winner === 'computer') {
@@ -246,8 +276,32 @@ const Analytics = (function() {
                 }
                 
                 // Track AI style performance if available
-                if (gameData.aiStyle) {
-                    switch (gameData.aiStyle) {
+                const aiStyle = gameData.aiStyle || 'random';
+                
+                // Update the detailed stats
+                if (playerSymbol && aiStyle) {
+                    const symbolKey = playerSymbol === 'X' ? 'playerAsX' : 'playerAsO';
+                    
+                    // Ensure the style exists in our tracker
+                    if (!aiPerformance[symbolKey][aiStyle]) {
+                        aiPerformance[symbolKey][aiStyle] = { wins: 0, losses: 0, ties: 0, total: 0 };
+                    }
+                    
+                    // Update counts
+                    aiPerformance[symbolKey][aiStyle].total++;
+                    
+                    if (gameData.winner === 'player') {
+                        aiPerformance[symbolKey][aiStyle].wins++;
+                    } else if (gameData.winner === 'computer') {
+                        aiPerformance[symbolKey][aiStyle].losses++;
+                    } else {
+                        aiPerformance[symbolKey][aiStyle].ties++;
+                    }
+                }
+                
+                // Update the overall AI style statistics
+                if (aiStyle) {
+                    switch (aiStyle) {
                         case 'aggressive':
                             aggressiveTotal++;
                             if (gameData.winner === 'computer') aggressiveWins++;
@@ -260,6 +314,10 @@ const Analytics = (function() {
                             balancedTotal++;
                             if (gameData.winner === 'computer') balancedWins++;
                             break;
+                        case 'random':
+                            randomTotal++;
+                            if (gameData.winner === 'computer') randomWins++;
+                            break;
                     }
                 }
             });
@@ -269,10 +327,27 @@ const Analytics = (function() {
             const computerWinRate = totalGames > 0 ? (computerWins / totalGames * 100).toFixed(1) : 0;
             const tieRate = totalGames > 0 ? (ties / totalGames * 100).toFixed(1) : 0;
             
+            // Calculate symbol win rates
+            const playerWinRateAsX = playerGamesAsX > 0 ? (playerWinsAsX / playerGamesAsX * 100).toFixed(1) : 0;
+            const playerWinRateAsO = playerGamesAsO > 0 ? (playerWinsAsO / playerGamesAsO * 100).toFixed(1) : 0;
+            
             // Calculate AI style win rates
             const aggressiveWinRate = aggressiveTotal > 0 ? (aggressiveWins / aggressiveTotal * 100).toFixed(1) : 0;
             const defensiveWinRate = defensiveTotal > 0 ? (defensiveWins / defensiveTotal * 100).toFixed(1) : 0;
             const balancedWinRate = balancedTotal > 0 ? (balancedWins / balancedTotal * 100).toFixed(1) : 0;
+            const randomWinRate = randomTotal > 0 ? (randomWins / randomTotal * 100).toFixed(1) : 0;
+            
+            // Calculate detailed win rates for each combination
+            for (const symbolKey in aiPerformance) {
+                for (const aiStyle in aiPerformance[symbolKey]) {
+                    const stats = aiPerformance[symbolKey][aiStyle];
+                    if (stats.total > 0) {
+                        stats.winRate = (stats.wins / stats.total * 100).toFixed(1);
+                    } else {
+                        stats.winRate = "0.0";
+                    }
+                }
+            }
             
             // Calculate win streak
             const winStreak = await calculateWinStreak();
@@ -299,6 +374,13 @@ const Analytics = (function() {
                 // Symbol performance
                 playerWinsAsX,
                 playerWinsAsO,
+                playerGamesAsX,
+                playerGamesAsO,
+                playerWinRateAsX,
+                playerWinRateAsO,
+                
+                // Detailed AI style performance by player symbol
+                aiPerformance,
                 
                 // AI style performance
                 aggressiveTotal,
@@ -309,7 +391,10 @@ const Analytics = (function() {
                 defensiveWinRate,
                 balancedTotal,
                 balancedWins,
-                balancedWinRate
+                balancedWinRate,
+                randomTotal,
+                randomWins,
+                randomWinRate
             };
         } catch (error) {
             console.error('Error fetching statistics:', error);
