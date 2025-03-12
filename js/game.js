@@ -527,7 +527,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Restart the game
-    function restartGame() {
+    function restartGame(event) {
         // Hide game over modal if visible
         gameOverModal.classList.add('hidden');
         gameOverModal.classList.remove('win-modal');
@@ -537,8 +537,50 @@ document.addEventListener('DOMContentLoaded', function() {
         // Also clear the savedGame variable
         savedGame = null;
         
-        // Start the game with coin toss
-        initGame();
+        // Check if this is a "Play Again" action or "Restart" action
+        const isPlayAgain = event && event.target.id === 'play-again-btn';
+        
+        if (isPlayAgain) {
+            // For "Play Again" after a completed game, just swap sides
+            // Swap symbols between player and AI
+            const tempSymbol = PLAYER_SYMBOL;
+            PLAYER_SYMBOL = AI_SYMBOL;
+            AI_SYMBOL = tempSymbol;
+            
+            // Player who gets X goes first
+            isPlayerTurn = (PLAYER_SYMBOL === 'X');
+            
+            // Update AI symbols
+            if (typeof AI !== 'undefined' && AI.setSymbols) {
+                AI.setSymbols(PLAYER_SYMBOL, AI_SYMBOL);
+            }
+            
+            // Reset game state
+            gameActive = true;
+            currentPhase = '3x3';
+            playerScore = 0;
+            computerScore = 0;
+            lastMoveHighlighted = false;
+            
+            // Hide score display in 3x3 phase
+            scoreElement.classList.add('hidden');
+            
+            // Initialize and render the board
+            Board.initializeBoard(3);
+            Board.renderBoard();
+            
+            // Update game status based on who goes first
+            if (isPlayerTurn) {
+                updateStatus(`Your turn! Place a ${PLAYER_SYMBOL}`);
+            } else {
+                updateStatus("Computer's turn...");
+                // Let the computer make the first move after a short delay
+                setTimeout(makeAIMove, 500);
+            }
+        } else {
+            // For a regular Restart, do the coin toss
+            initGame();
+        }
     }
     
     // Initialize the game when the page loads
