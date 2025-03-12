@@ -4,7 +4,7 @@ const firebaseConfig = {
   authDomain: "tictactoeextreme-5783b.firebaseapp.com",
   projectId: "tictactoeextreme-5783b",
   storageBucket: "tictactoeextreme-5783b.firebasestorage.app",
-  messagingSenderId: "",
+  messagingSenderId: "700837911356",
   appId: "1:700837911356:web:8c460884e0a23649799c39"
 };
 
