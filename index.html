@@ -15,6 +15,54 @@
             background-color: #4a90e2;
         }
         
+        /* Theme Toggle Button */
+        .theme-toggle {
+            margin-left: 10px;
+            background-color: #34495e;
+        }
+        
+        body.light-theme {
+            --bg-color: #f5f5f5;
+            --text-color: #333;
+            --header-color: #2c3e50;
+            --cell-bg: white;
+            --cell-border: #2c3e50;
+            --cell-hover: #f0f0f0;
+            --x-color: #e74c3c;
+            --o-color: #3498db;
+            --highlight-color-x: rgba(231, 76, 60, 0.3);
+            --highlight-color-o: rgba(52, 152, 219, 0.3);
+            --highlight-border-x: #e74c3c;
+            --highlight-border-o: #3498db;
+            --score-bg: #e7e7e7;
+            --button-bg: #3498db;
+            --button-hover: #2980b9;
+            --button-text: white;
+            --modal-bg: rgba(0, 0, 0, 0.7);
+            --modal-content-bg: white;
+        }
+        
+        body.dark-theme {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --header-color: #4a89dc;
+            --cell-bg: #2c2c2c;
+            --cell-border: #4a89dc;
+            --cell-hover: #3c3c3c;
+            --x-color: #ff6b6b;
+            --o-color: #5cb3ff;
+            --highlight-color-x: rgba(255, 107, 107, 0.3);
+            --highlight-color-o: rgba(92, 179, 255, 0.3);
+            --highlight-border-x: #ff6b6b;
+            --highlight-border-o: #5cb3ff;
+            --score-bg: #2c2c2c;
+            --button-bg: #4a89dc;
+            --button-hover: #5d9cf5;
+            --button-text: #ffffff;
+            --modal-bg: rgba(0, 0, 0, 0.8);
+            --modal-content-bg: #2c2c2c;
+        }
+        
         /* Stats Modal Styles */
         #stats-modal .modal-content {
             max-width: 500px;
@@ -25,16 +73,98 @@
             line-height: 1.6;
         }
         
+        /* Stats Tabs */
+        .stats-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--button-bg);
+            margin-bottom: 15px;
+        }
+        
+        .stats-tab {
+            padding: 8px 15px;
+            cursor: pointer;
+            background-color: var(--cell-bg);
+            border: 1px solid var(--button-bg);
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            color: var(--text-color);
+            font-weight: bold;
+        }
+        
+        .stats-tab.active {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+        }
+        
+        .stats-tab-content {
+            display: none;
+        }
+        
+        .stats-tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Stats Period Selector */
+        .stats-period {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .period-btn {
+            padding: 5px 10px;
+            background-color: var(--cell-bg);
+            border: 1px solid var(--cell-border);
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+        
+        .period-btn:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+        
+        .period-btn:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .period-btn.active {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            font-weight: bold;
+        }
+        
+        /* Chart Container */
+        .chart-container {
+            width: 100%;
+            height: 200px;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        /* Stats Content Sections */
         .stat-section {
             margin-bottom: 20px;
+            background-color: var(--cell-bg);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .section-title {
             font-weight: bold;
             font-size: 1.1em;
             margin-bottom: 10px;
-            color: #333;
-            border-bottom: 2px solid #4a90e2;
+            color: var(--header-color);
+            border-bottom: 2px solid var(--button-bg);
             padding-bottom: 5px;
         }
         
@@ -43,7 +173,7 @@
             justify-content: space-between;
             margin-bottom: 6px;
             padding-bottom: 6px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--cell-border);
         }
         
         .stat-label {
@@ -52,7 +182,7 @@
         
         .progress-bar-container {
             height: 10px;
-            background-color: #eee;
+            background-color: var(--cell-hover);
             border-radius: 5px;
             margin-top: 3px;
             overflow: hidden;
@@ -60,14 +190,61 @@
         
         .progress-bar {
             height: 100%;
-            background-color: #4a90e2;
+            background-color: var(--button-bg);
         }
         
+        /* Win Streaks */
+        .win-streak {
+            background-color: var(--cell-bg);
+            border: 2px solid var(--x-color);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .streak-label {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .streak-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--x-color);
+        }
+        
+        /* AI Style Icons */
+        .ai-style-icon {
+            font-size: 1.5em;
+            margin-right: 8px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 500px) {
+            .stats-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .stats-tab {
+                flex: 1 0 auto;
+                text-align: center;
+                font-size: 0.9em;
+                padding: 8px 10px;
+            }
+            
+            .period-btn {
+                padding: 5px 7px;
+                font-size: 0.8em;
+            }
+        }
+        
+        /* Site Stats Section */
         .site-stats {
             font-size: 0.9em;
             margin-top: 20px;
-            color: #666;
-            border-top: 1px dashed #ccc;
+            color: var(--text-color);
+            border-top: 1px dashed var(--cell-border);
             padding-top: 10px;
         }
         
@@ -106,6 +283,7 @@
         <div class="controls">
             <button id="restart-btn">Restart Game</button>
             <button id="stats-btn" class="stats-button">Stats</button>
+            <button id="theme-toggle-btn" class="theme-toggle">🌙 Dark</button>
         </div>
         
         <div>
@@ -125,10 +303,29 @@
     <div id="stats-modal" class="modal hidden">
         <div class="modal-content">
             <h2>Game Statistics</h2>
+            
+            <!-- Stats Period Selector -->
+            <div class="stats-period">
+                <button class="period-btn active" data-period="all">All Time</button>
+                <button class="period-btn" data-period="month">This Month</button>
+                <button class="period-btn" data-period="week">This Week</button>
+                <button class="period-btn" data-period="today">Today</button>
+            </div>
+            
+            <!-- Stats Tabs -->
+            <div class="stats-tabs">
+                <div class="stats-tab active" data-tab="game">Games</div>
+                <div class="stats-tab" data-tab="performance">Performance</div>
+                <div class="stats-tab" data-tab="site">Site Stats</div>
+            </div>
+            
             <div id="stats-content">Loading...</div>
             <button id="close-stats-btn" class="modal-close">Close</button>
         </div>
     </div>
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
 
     <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -161,165 +358,6 @@
     <script src="js/game.js"></script>
     <script src="js/confetti.js"></script>
     <script src="js/coin-toss.js"></script>
-    
-    <!-- Stats Modal Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Firebase Analytics
-            if (typeof Analytics !== 'undefined' && Analytics.initialize) {
-                console.log('Starting Firebase Analytics initialization...');
-                Analytics.initialize().then(result => {
-                    console.log('Firebase initialization result:', result);
-                }).catch(error => {
-                    console.error('Error during Firebase initialization:', error);
-                });
-            } else {
-                console.error('Analytics object not found or initialize method missing');
-            }
-            
-            const statsBtn = document.getElementById('stats-btn');
-            const statsModal = document.getElementById('stats-modal');
-            const closeStatsBtn = document.getElementById('close-stats-btn');
-            const statsContent = document.getElementById('stats-content');
-            
-            statsBtn.addEventListener('click', async function() {
-                statsModal.classList.remove('hidden');
-                statsContent.innerHTML = 'Loading...';
-                
-                try {
-                    const stats = await Analytics.getStatistics();
-                    if (stats) {
-                        let statsHtml = '';
-                        
-                        // Game Outcomes Section
-                        statsHtml += `<div class="stat-section">
-                            <div class="section-title">Game Outcomes</div>`;
-                        
-                        if (stats.totalGames > 0) {
-                            statsHtml += `<div class="stat-item">
-                                <span class="stat-label">Total Games Played:</span>
-                                <span>${stats.totalGames}</span>
-                            </div>`;
-                            
-                            statsHtml += `<div class="stat-item">
-                                <span class="stat-label">Player Wins:</span>
-                                <span>${stats.playerWins} (${stats.playerWinRate}%)</span>
-                                <div class="progress-bar-container">
-                                    <div class="progress-bar" style="width: ${stats.playerWinRate}%"></div>
-                                </div>
-                            </div>`;
-                            
-                            statsHtml += `<div class="stat-item">
-                                <span class="stat-label">Computer Wins:</span>
-                                <span>${stats.computerWins} (${stats.computerWinRate}%)</span>
-                                <div class="progress-bar-container">
-                                    <div class="progress-bar" style="width: ${stats.computerWinRate}%"></div>
-                                </div>
-                            </div>`;
-                            
-                            statsHtml += `<div class="stat-item">
-                                <span class="stat-label">Ties:</span>
-                                <span>${stats.ties} (${stats.tieRate}%)</span>
-                                <div class="progress-bar-container">
-                                    <div class="progress-bar" style="width: ${stats.tieRate}%"></div>
-                                </div>
-                            </div>`;
-                        } else {
-                            statsHtml += `<p>No games have been completed yet.</p>`;
-                        }
-                        statsHtml += `</div>`;
-                        
-                        // Symbol Performance Section
-                        if (stats.playerWinsAsX > 0 || stats.playerWinsAsO > 0) {
-                            statsHtml += `<div class="stat-section">
-                                <div class="section-title">Symbol Performance</div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Player Wins as X:</span>
-                                    <span>${stats.playerWinsAsX}</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Player Wins as O:</span>
-                                    <span>${stats.playerWinsAsO}</span>
-                                </div>
-                            </div>`;
-                        }
-                        
-                        // AI Style Performance Section
-                        if (stats.aggressiveTotal > 0 || stats.defensiveTotal > 0 || stats.balancedTotal > 0) {
-                            statsHtml += `<div class="stat-section">
-                                <div class="section-title">AI Style Performance</div>`;
-                            
-                            if (stats.aggressiveTotal > 0) {
-                                statsHtml += `<div class="stat-item">
-                                    <span class="stat-label">Aggressive:</span>
-                                    <span>${stats.aggressiveWins}/${stats.aggressiveTotal} (${stats.aggressiveWinRate}% wins)</span>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar" style="width: ${stats.aggressiveWinRate}%"></div>
-                                    </div>
-                                </div>`;
-                            }
-                            
-                            if (stats.defensiveTotal > 0) {
-                                statsHtml += `<div class="stat-item">
-                                    <span class="stat-label">Defensive:</span>
-                                    <span>${stats.defensiveWins}/${stats.defensiveTotal} (${stats.defensiveWinRate}% wins)</span>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar" style="width: ${stats.defensiveWinRate}%"></div>
-                                    </div>
-                                </div>`;
-                            }
-                            
-                            if (stats.balancedTotal > 0) {
-                                statsHtml += `<div class="stat-item">
-                                    <span class="stat-label">Balanced:</span>
-                                    <span>${stats.balancedWins}/${stats.balancedTotal} (${stats.balancedWinRate}% wins)</span>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar" style="width: ${stats.balancedWinRate}%"></div>
-                                    </div>
-                                </div>`;
-                            }
-                            
-                            statsHtml += `</div>`;
-                        }
-                        
-                        // Site Statistics (minimized at bottom)
-                        statsHtml += `<div class="site-stats">
-                            <div class="section-title">Site Metrics</div>
-                            <div class="stat-item">
-                                <span class="stat-label">Total Visits:</span>
-                                <span>${stats.totalVisits}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Unique Visitors:</span>
-                                <span>${stats.totalUniques}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Today's Visits:</span>
-                                <span>${stats.todayVisits}</span>
-                            </div>
-                        </div>`;
-                        
-                        statsContent.innerHTML = statsHtml;
-                    } else {
-                        statsContent.innerHTML = 'Statistics are not available at this time.';
-                    }
-                } catch (error) {
-                    console.error('Error fetching statistics:', error);
-                    statsContent.innerHTML = 'An error occurred while loading statistics.';
-                }
-            });
-            
-            closeStatsBtn.addEventListener('click', function() {
-                statsModal.classList.add('hidden');
-            });
-            
-            // Close modal when clicking outside of it
-            window.addEventListener('click', function(event) {
-                if (event.target === statsModal) {
-                    statsModal.classList.add('hidden');
-                }
-            });
-        });
-    </script>
+    <script src="js/stats-display.js"></script>
 </body>
 </html>
