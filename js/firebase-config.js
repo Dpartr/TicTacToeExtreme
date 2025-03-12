@@ -1,11 +1,9 @@
-// This file will be replaced during GitHub Actions deployment
-// with the actual Firebase configuration from repository secrets
-
+// Generated Firebase configuration
 const firebaseConfig = {
-  apiKey: "PLACEHOLDER_API_KEY",
-  authDomain: "PLACEHOLDER_AUTH_DOMAIN",
-  projectId: "PLACEHOLDER_PROJECT_ID",
-  storageBucket: "PLACEHOLDER_STORAGE_BUCKET",
-  messagingSenderId: "PLACEHOLDER_MESSAGING_SENDER_ID",
-  appId: "PLACEHOLDER_APP_ID"
+  apiKey: "AIzaSyDuOAhafFl0qCgzWB89F0P4DL_w0EjquHk",
+  authDomain: "tictactoeextreme-5783b.firebaseapp.com",
+  projectId: "tictactoeextreme-5783b",
+  storageBucket: "tictactoeextreme-5783b.firebasestorage.app",
+  messagingSenderId: "",
+  appId: "1:700837911356:web:8c460884e0a23649799c39"
 };
