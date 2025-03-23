@@ -191,8 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // First column - Win Streak and Game Outcomes pie chart
             html += '<div>';
             
-            // Note: Win streak section removed as requested
-            html += `<div></div>`;
+            // Win streak section completely removed
             
             // Game Outcomes chart
             html += `<div class="stat-section">

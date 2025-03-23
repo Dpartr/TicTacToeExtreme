@@ -147,9 +147,9 @@ const Analytics = (function() {
         }
     }
     
-    // Stub function for win streak calculation - returns 0 to avoid errors
+    // Win streak functionality removed
     async function calculateWinStreak() {
-        return 0;
+        return 0; // Always return 0 as win streak is disabled
     }
     
     // Get statistics for the stats modal
@@ -322,8 +322,8 @@ const Analytics = (function() {
                 }
             }
             
-            // Calculate win streak
-            const winStreak = await calculateWinStreak();
+            // Win streak calculation removed
+            const winStreak = 0;
             
             return {
                 // Site metrics
