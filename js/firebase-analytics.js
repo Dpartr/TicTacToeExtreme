@@ -148,14 +148,41 @@ const Analytics = (function() {
     }
     
     // Calculate win streak from game events
-    async function calculateWinStreak() {
+    async function calculateWinStreak(period = 'all') {
         try {
-            // Get all completed games ordered by timestamp
-            const gamesQuery = await db.collection('events')
-                .where('type', '==', 'gameCompleted')
-                .orderBy('timestamp', 'desc')
-                .limit(20) // Limit to recent games for efficiency
-                .get();
+            // Get time period filter dates
+            const now = new Date();
+            let periodStart = null;
+            
+            switch(period) {
+                case 'today':
+                    periodStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    break;
+                case 'week':
+                    // Get the first day of the current week (Sunday is the first day)
+                    periodStart = new Date(now);
+                    periodStart.setDate(now.getDate() - now.getDay());
+                    periodStart.setHours(0, 0, 0, 0);
+                    break;
+                case 'month':
+                    periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                    break;
+                default: // 'all'
+                    periodStart = null;
+            }
+            
+            // Create query with period filter if needed
+            let query = db.collection('events').where('type', '==', 'gameCompleted');
+            
+            if (periodStart) {
+                // Need to use orderBy with the timestamp filter
+                query = query.where('timestamp', '>=', firebase.firestore.Timestamp.fromDate(periodStart));
+            }
+            
+            // Always order by timestamp for consistent results
+            query = query.orderBy('timestamp', 'desc').limit(20);
+            
+            const gamesQuery = await query.get();
                 
             let currentStreak = 0;
             let streakBroken = false;
@@ -180,7 +207,7 @@ const Analytics = (function() {
     }
     
     // Get statistics for the stats modal
-    async function getStatistics() {
+    async function getStatistics(period = 'all') {
         if (!initialized) {
             await initialize();
         }
@@ -204,10 +231,37 @@ const Analytics = (function() {
             const todayVisits = dailyCounts[today] || 0;
             const todayUniques = uniqueCounts[today] || 0;
             
-            // Get all completed games
-            const gamesQuery = await db.collection('events')
-                .where('type', '==', 'gameCompleted')
-                .get();
+            // Get time period filter dates
+            const now = new Date();
+            let periodStart = null;
+            
+            switch(period) {
+                case 'today':
+                    periodStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    break;
+                case 'week':
+                    // Get the first day of the current week (Sunday is the first day)
+                    periodStart = new Date(now);
+                    periodStart.setDate(now.getDate() - now.getDay());
+                    periodStart.setHours(0, 0, 0, 0);
+                    break;
+                case 'month':
+                    periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                    break;
+                default: // 'all'
+                    periodStart = null;
+            }
+            
+            // Get completed games based on the time period
+            let query = db.collection('events').where('type', '==', 'gameCompleted');
+            
+            if (periodStart) {
+                // Add timestamp filter if period is specified
+                query = query.where('timestamp', '>=', firebase.firestore.Timestamp.fromDate(periodStart));
+            }
+            
+            // Execute the query
+            const gamesQuery = await query.get();
                 
             const totalGames = gamesQuery.size;
             
@@ -349,8 +403,8 @@ const Analytics = (function() {
                 }
             }
             
-            // Calculate win streak
-            const winStreak = await calculateWinStreak();
+            // Calculate win streak for the selected time period
+            const winStreak = await calculateWinStreak(period);
             
             return {
                 // Site metrics

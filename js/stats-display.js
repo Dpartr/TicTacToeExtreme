@@ -92,13 +92,22 @@ document.addEventListener('DOMContentLoaded', function() {
         // Period selector
         const periodBtns = document.querySelectorAll('.period-btn');
         periodBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', async function() {
                 periodBtns.forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 currentPeriod = this.dataset.period;
-                // In a real implementation, we would filter stats by period here
-                // For now, we'll just re-render with the same data
-                renderStats(currentStats);
+                
+                // Display loading state
+                statsContent.innerHTML = 'Loading...';
+                
+                try {
+                    // Get statistics filtered by the selected time period
+                    currentStats = await Analytics.getStatistics(currentPeriod);
+                    renderStats(currentStats);
+                } catch (error) {
+                    console.error('Error fetching statistics for period ' + currentPeriod + ':', error);
+                    statsContent.innerHTML = 'An error occurred while loading statistics.';
+                }
             });
         });
         
@@ -107,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
             statsContent.innerHTML = 'Loading...';
             
             try {
-                currentStats = await Analytics.getStatistics();
+                currentStats = await Analytics.getStatistics('all'); // Start with 'all' period
                 renderStats(currentStats);
             } catch (error) {
                 console.error('Error fetching statistics:', error);
