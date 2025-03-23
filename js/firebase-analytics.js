@@ -147,10 +147,7 @@ const Analytics = (function() {
         }
     }
     
-    // Win streak functionality removed
-    async function calculateWinStreak() {
-        return 0; // Always return 0 as win streak is disabled
-    }
+    // Win streak functionality completely removed
     
     // Get statistics for the stats modal
     async function getStatistics() {
@@ -322,8 +319,7 @@ const Analytics = (function() {
                 }
             }
             
-            // Win streak calculation removed
-            const winStreak = 0;
+            // Win streak removed completely
             
             return {
                 // Site metrics
@@ -332,8 +328,7 @@ const Analytics = (function() {
                 todayVisits,
                 todayUniques,
                 
-                // Win streak
-                winStreak,
+                // Win streak removed
                 
                 // Game metrics
                 totalGames,
@@ -380,7 +375,7 @@ const Analytics = (function() {
         initialize,
         trackPageView,
         trackGameEvent,
-        calculateWinStreak,
+        // calculateWinStreak removed
         getStatistics
     };
 })();

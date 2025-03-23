@@ -94,7 +94,24 @@ document.addEventListener('DOMContentLoaded', function() {
             statsContent.innerHTML = 'Loading...';
             
             try {
-                currentStats = await Analytics.getStatistics();
+                try {
+                    currentStats = await Analytics.getStatistics();
+                    // No win streak handling needed anymore
+                } catch (error) {
+                    console.error('Error in getStatistics:', error);
+                    // Create a minimal stats object if the full one fails
+                    currentStats = {
+                        totalVisits: 0,
+                        totalUniques: 0,
+                        todayVisits: 0,
+                        todayUniques: 0,
+                        // Win streak removed
+                        totalGames: 0,
+                        playerWins: 0,
+                        computerWins: 0,
+                        ties: 0
+                    };
+                }
                 renderStats(currentStats);
             } catch (error) {
                 console.error('Error fetching statistics:', error);
