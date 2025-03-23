@@ -116,37 +116,6 @@
             to { opacity: 1; }
         }
         
-        /* Stats Period Selector */
-        .stats-period {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 15px;
-        }
-        
-        .period-btn {
-            padding: 5px 10px;
-            background-color: var(--cell-bg);
-            border: 1px solid var(--cell-border);
-            color: var(--text-color);
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.2s;
-        }
-        
-        .period-btn:first-child {
-            border-radius: 4px 0 0 4px;
-        }
-        
-        .period-btn:last-child {
-            border-radius: 0 4px 4px 0;
-        }
-        
-        .period-btn.active {
-            background-color: var(--button-bg);
-            color: var(--button-text);
-            font-weight: bold;
-        }
-        
         /* Chart Container */
         .chart-container {
             width: 100%;
@@ -204,26 +173,6 @@
             background-color: var(--button-bg);
         }
         
-        /* Win Streaks */
-        .win-streak {
-            background-color: var(--cell-bg);
-            border: 2px solid var(--x-color);
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 15px;
-            text-align: center;
-        }
-        
-        .streak-label {
-            font-size: 0.9em;
-            margin-bottom: 5px;
-        }
-        
-        .streak-value {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: var(--x-color);
-        }
         
         /* AI Style Icons */
         .ai-style-icon {
@@ -330,14 +279,6 @@
     <div id="stats-modal" class="modal hidden">
         <div class="modal-content">
             <h2>Game Statistics</h2>
-            
-            <!-- Stats Period Selector -->
-            <div class="stats-period">
-                <button class="period-btn active" data-period="all">All Time</button>
-                <button class="period-btn" data-period="month">This Month</button>
-                <button class="period-btn" data-period="week">This Week</button>
-                <button class="period-btn" data-period="today">Today</button>
-            </div>
             
             <!-- Stats Tabs -->
             <div class="stats-tabs">

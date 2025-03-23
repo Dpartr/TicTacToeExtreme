@@ -147,36 +147,9 @@ const Analytics = (function() {
         }
     }
     
-    // Calculate win streak from game events
+    // Stub function for win streak calculation - returns 0 to avoid errors
     async function calculateWinStreak() {
-        try {
-            // Get all completed games ordered by timestamp
-            const gamesQuery = await db.collection('events')
-                .where('type', '==', 'gameCompleted')
-                .orderBy('timestamp', 'desc')
-                .limit(20) // Limit to recent games for efficiency
-                .get();
-                
-            let currentStreak = 0;
-            let streakBroken = false;
-            
-            gamesQuery.forEach(doc => {
-                const gameData = doc.data();
-                
-                if (!streakBroken) {
-                    if (gameData.winner === 'player') {
-                        currentStreak++;
-                    } else {
-                        streakBroken = true;
-                    }
-                }
-            });
-            
-            return currentStreak;
-        } catch (error) {
-            console.error('Error calculating win streak:', error);
-            return 0;
-        }
+        return 0;
     }
     
     // Get statistics for the stats modal

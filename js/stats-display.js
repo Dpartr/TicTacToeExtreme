@@ -72,7 +72,6 @@ document.addEventListener('DOMContentLoaded', function() {
         let styleChart = null;
         
         // State variables
-        let currentPeriod = 'all';
         let currentTab = 'game';
         let currentStats = null;
         
@@ -89,18 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Period selector buttons
-        // Note: All buttons just select the all-time stats to simplify implementation
-        const periodBtns = document.querySelectorAll('.period-btn');
-        periodBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                periodBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                // We don't actually use the period value, all stats are all-time
-                renderStats(currentStats);
-            });
-        });
-        
+
         statsBtn.addEventListener('click', async function() {
             statsModal.classList.remove('hidden');
             statsContent.innerHTML = 'Loading...';
@@ -151,10 +139,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 statsContent.innerHTML = 'Statistics are not available at this time.';
                 return;
             }
-            
-            // Calculate win streak (this would normally be calculated server-side)
-            // For now we'll just set a placeholder value
-            const winStreak = 3; 
             
             // Create tab container divs
             let gameTabHtml = '<div class="stats-tab-content" id="game-tab"></div>';
