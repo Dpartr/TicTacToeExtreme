@@ -89,25 +89,15 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Period selector
+        // Period selector buttons
+        // Note: All buttons just select the all-time stats to simplify implementation
         const periodBtns = document.querySelectorAll('.period-btn');
         periodBtns.forEach(btn => {
-            btn.addEventListener('click', async function() {
+            btn.addEventListener('click', function() {
                 periodBtns.forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                currentPeriod = this.dataset.period;
-                
-                // Display loading state
-                statsContent.innerHTML = 'Loading...';
-                
-                try {
-                    // Get statistics filtered by the selected time period
-                    currentStats = await Analytics.getStatistics(currentPeriod);
-                    renderStats(currentStats);
-                } catch (error) {
-                    console.error('Error fetching statistics for period ' + currentPeriod + ':', error);
-                    statsContent.innerHTML = 'An error occurred while loading statistics.';
-                }
+                // We don't actually use the period value, all stats are all-time
+                renderStats(currentStats);
             });
         });
         
@@ -116,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
             statsContent.innerHTML = 'Loading...';
             
             try {
-                currentStats = await Analytics.getStatistics('all'); // Start with 'all' period
+                currentStats = await Analytics.getStatistics();
                 renderStats(currentStats);
             } catch (error) {
                 console.error('Error fetching statistics:', error);
@@ -217,12 +207,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // First column - Win Streak and Game Outcomes pie chart
             html += '<div>';
             
-            // Win Streak Section
-            html += `
-            <div class="win-streak">
-                <div class="streak-label">Current Win Streak</div>
-                <div class="streak-value">${stats.winStreak || 0}</div>
-            </div>`;
+            // Note: Win streak section removed as requested
+            html += `<div></div>`;
             
             // Game Outcomes chart
             html += `<div class="stat-section">
