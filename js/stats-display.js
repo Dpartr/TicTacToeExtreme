@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', function() {
             html += `<div class="stat-section">
                 <div class="section-title">Global AI Style Performance</div>`;
             
-            if (stats.aggressiveTotal > 0 || stats.defensiveTotal > 0 || stats.balancedTotal > 0 || stats.randomTotal > 0) {
+            if (stats.aggressiveTotal > 0 || stats.defensiveTotal > 0 || stats.balancedTotal > 0) {
                 // Add chart container for AI style breakdown
                 html += `<div class="chart-container" style="height: 180px;">
                     <canvas id="style-chart"></canvas>
@@ -404,12 +404,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>`;
                 }
                 
-                if (stats.randomTotal > 0) {
-                    html += `<div class="stat-item">
-                        <span class="stat-label"><span class="ai-style-icon">🎲</span> Random:</span>
-                        <span>${stats.randomWins}/${stats.randomTotal} (${stats.randomWinRate}%)</span>
-                    </div>`;
-                }
+
             } else {
                 html += `<p>No AI style performance data available yet.</p>`;
             }
@@ -420,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>'; // End grid
             
             // Add the detailed breakdown in full width
-            if (stats.aggressiveTotal > 0 || stats.defensiveTotal > 0 || stats.balancedTotal > 0 || stats.randomTotal > 0) {
+            if (stats.aggressiveTotal > 0 || stats.defensiveTotal > 0 || stats.balancedTotal > 0) {
                 html += `<div class="stat-section">
                     <div class="section-title">Player Performance By Symbol & AI Style</div>
                     <div class="chart-container" style="height: 250px;">
@@ -533,13 +528,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     colors.push('#2ecc71'); // Green
                 }
                 
-                if (stats.randomTotal > 0) {
-                    labels.push('Random');
-                    winRates.push(parseFloat(stats.randomWinRate));
-                    totals.push(stats.randomTotal);
-                    icons.push('🎲');
-                    colors.push('#9b59b6'); // Purple
-                }
+
                 
                 // Create new chart
                 styleChart = new Chart(ctx, {
@@ -586,8 +575,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         const index = context.dataIndex;
                                         return `Computer Wins: ${index === 0 ? stats.aggressiveWins : 
                                                         index === 1 ? stats.defensiveWins : 
-                                                        index === 2 ? stats.balancedWins : 
-                                                        stats.randomWins} / ${totals[index]} games`;
+                                                        index === 2 ? stats.balancedWins : 0} / ${totals[index]} games`;
                                     }
                                 }
                             }
@@ -600,7 +588,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Format the data for the grouped bar chart
                 const dataByStyle = {
-                    labels: ['Aggressive', 'Defensive', 'Balanced', 'Random'],
+                    labels: ['Aggressive', 'Defensive', 'Balanced'],
                     datasets: [
                         {
                             label: 'As X',
@@ -608,8 +596,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             data: [
                                 parseFloat(stats.aiPerformance.playerAsX.aggressive?.winRate || 0),
                                 parseFloat(stats.aiPerformance.playerAsX.defensive?.winRate || 0),
-                                parseFloat(stats.aiPerformance.playerAsX.balanced?.winRate || 0),
-                                parseFloat(stats.aiPerformance.playerAsX.random?.winRate || 0)
+                                parseFloat(stats.aiPerformance.playerAsX.balanced?.winRate || 0)
                             ]
                         },
                         {
@@ -618,8 +605,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             data: [
                                 parseFloat(stats.aiPerformance.playerAsO.aggressive?.winRate || 0),
                                 parseFloat(stats.aiPerformance.playerAsO.defensive?.winRate || 0),
-                                parseFloat(stats.aiPerformance.playerAsO.balanced?.winRate || 0),
-                                parseFloat(stats.aiPerformance.playerAsO.random?.winRate || 0)
+                                parseFloat(stats.aiPerformance.playerAsO.balanced?.winRate || 0)
                             ]
                         }
                     ]
@@ -663,7 +649,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         const datasetIndex = context.datasetIndex;
                                         const dataIndex = context.dataIndex;
                                         const symbolKey = datasetIndex === 0 ? 'playerAsX' : 'playerAsO';
-                                        const styleKey = ['aggressive', 'defensive', 'balanced', 'random'][dataIndex];
+                                        const styleKey = ['aggressive', 'defensive', 'balanced'][dataIndex];
                                         
                                         if (stats.aiPerformance[symbolKey][styleKey]) {
                                             const data = stats.aiPerformance[symbolKey][styleKey];
